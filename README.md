@@ -1,37 +1,24 @@
-# Two-Handed Blocks — prototype 0.1.0-alpha (Minecraft 26.3 / Fabric)
+# Two-Handed Blocks 0.2.0 Alpha 2 (experimental)
 
-**Preview / source build. NOT yet verified in a real game.**
+Based on working 0.2.0 Alpha 1.
 
-## Intended behavior
+## Changes
+- Cancels block-breaking and entity attacks (retained from Alpha 1).
+- Prevents entity interactions (riding, trading, feeding) when the main hand carries a BlockItem.
+- Overrides the vanilla block `useWithoutItem` action with `PASS` when carrying, aiming to bypass opening chests, crafting tables, doors, buttons, etc. while allowing subsequent BlockItem placement.
+- Offhand interaction blocking from Alpha 1 retained.
 
-- A selected **BlockItem** in your main hand switches to a two-arm pose.
-- First-person: both arms and the selected block are shown in front.
-- Third-person: both arms face inward; the held block is rendered at chest level.
-- The item in the offhand is kept in inventory, visually hidden, and **active offhand use** is cancelled on both client/server (block/item/entity interaction).
-- Selecting food, tools, weapons, etc. restores vanilla animations.
-- Regular block placement remains unchanged. Cannot pick up placed containers or mobs.
+## Important limitations
+- Experimental: cannot guarantee the right-click chain behaves as intended without in-game testing. The block-specific `useItemOn` stage may still intercept certain interactions.
+- Offhand-held blocks do not yet trigger the mode.
+- Swimming, riding controls, pose adjustments, passive offhand effects not implemented.
+- Needs GitHub Actions compilation; never put this source ZIP inside Minecraft mods.
 
-## Known caveats
+## Testing
+1. Confirm placing a block onto dirt, chest, crafting table and door.
+2. Confirm chest/table UI and door/button actions do not trigger.
+3. Try villager trade and boarding an empty boat while holding a block.
+4. Switch to a pickaxe and confirm everything is interactive again.
+5. Verify attacks and mining remain blocked when holding a block.
 
-- **Compilation and runtime not verified**. Inspect the GitHub Actions build output first. The transforms may need positional tweaks.
-- This 0.1.0-alpha does not cancel passive effects of offhand items (e.g., held totems), only active use events.
-- Compatibility with **Not Enough Animations** must be tested; it also modifies PlayerModel.setupAnim.
-- Modded non-BlockItem objects that look like blocks are not included.
-- Works as an ordinary mod in both client and server for offhand restrictions; the animation is client-only.
-
-## Build
-
-1. Upload these project files to a new GitHub repository.
-2. Open **Actions**, wait for `build` to finish green.
-3. Download the ZIP from **Artifacts**. Install only `two-handed-blocks-0.1.0-alpha.jar` (do not install `-sources.jar` or `-dev.jar`).
-4. Test Minecraft 26.3 Fabric with Fabric API and this mod first; then add Not Enough Animations.
-5. Send both the error log and screenshots of both camera modes to refine the animation.
-
-**The mod is an original implementation**. No original Carry On code is copied or packaged.
-
-
-## 0.2.0-alpha1 incremental update
-
-New: cancel left-click block breaking and entity attacks via Fabric's `AttackBlockCallback` and `AttackEntityCallback` when a **main-hand** BlockItem is selected. The existing offhand action restriction remains. Block placement remains controlled by vanilla, as before.
-
-**Not yet implemented:** offhand-held block becoming the active carried block, preventing continuous-progress mining in all circumstances, universal interaction overrides (doors/chests vs placement), swim restrictions, mount controls, and final arm/scale polishing. This is a development milestone, not full 0.2.0. Test first with only Fabric API and this mod; confirm both break and attack suppression in survival mode and reactivation when selecting an ordinary item.
+If placement fails on an interactive block, report the precise target and what occurs.

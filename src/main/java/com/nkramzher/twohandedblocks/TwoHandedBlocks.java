@@ -3,6 +3,7 @@ package com.nkramzher.twohandedblocks;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
+import net.fabricmc.fabric.api.event.player.BlockEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
@@ -33,9 +34,19 @@ public final class TwoHandedBlocks implements ModInitializer {
         UseItemCallback.EVENT.register((player, level, hand) ->
                 hand == InteractionHand.OFF_HAND && BlockRules.isCarrying(player)
                         ? InteractionResult.FAIL : InteractionResult.PASS);
+        // Skip the block's empty-hand behavior (open chest, door, crafting table,
+        // button, etc.) but keep the held BlockItem's normal placement phase.
+        // Returning PASS here overrides the block-side useWithoutItem result;
+        // it does NOT cancel the entire right-click chain.
+        BlockEvents.USE_WITHOUT_ITEM.register((state, level, pos, player, hit) ->
+                BlockRules.isCarrying(player) ? InteractionResult.PASS : null);
+
+        // Prevent riding, trading, feeding and other entity interactions while
+        // carrying a block in both hands. Unlike blocks, entities have no
+        // block-placement fallback.
         UseEntityCallback.EVENT.register((player, level, hand, entity, hit) ->
-                hand == InteractionHand.OFF_HAND && BlockRules.isCarrying(player)
-                        ? InteractionResult.FAIL : InteractionResult.PASS);
-        LOGGER.info("Two-Handed Blocks 0.2.0 alpha attack restrictions initialized");
+                BlockRules.isCarrying(player) ? InteractionResult.FAIL : InteractionResult.PASS);
+
+        LOGGER.info("Two-Handed Blocks 0.2.0 alpha2 interaction restrictions initialized");
     }
 }
