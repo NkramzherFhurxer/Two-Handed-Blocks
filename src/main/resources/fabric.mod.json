@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "id": "twohandedblocks",
+  "version": "${version}",
+  "name": "Two-Handed Blocks",
+  "description": "Hold selected inventory blocks with both hands; first- and third-person animations and temporarily blocked off-hand use. Prototype build.",
+  "authors": [
+    "NkramzherFhurxer"
+  ],
+  "contact": {},
+  "license": "CC0-1.0",
+  "icon": "assets/twohandedblocks/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.nkramzher.twohandedblocks.TwoHandedBlocks"
+    ],
+    "client": [
+      "com.nkramzher.twohandedblocks.client.TwoHandedBlocksClient"
+    ]
+  },
+  "mixins": [
+    "twohandedblocks.mixins.json",
+    {
+      "config": "twohandedblocks.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.20.1",
+    "minecraft": "~26.3",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}
