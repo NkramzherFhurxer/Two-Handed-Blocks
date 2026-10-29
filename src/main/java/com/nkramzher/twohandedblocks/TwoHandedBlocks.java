@@ -1,6 +1,8 @@
 package com.nkramzher.twohandedblocks;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
@@ -16,6 +18,13 @@ public final class TwoHandedBlocks implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        // Stop breaking blocks and attacking any entity while a block occupies both hands.
+        // FAIL stops processing on both logical sides, preventing client-side attack packets.
+        AttackBlockCallback.EVENT.register((player, level, hand, pos, direction) ->
+                BlockRules.isCarrying(player) ? InteractionResult.FAIL : InteractionResult.PASS);
+        AttackEntityCallback.EVENT.register((player, level, hand, entity, hit) ->
+                BlockRules.isCarrying(player) ? InteractionResult.FAIL : InteractionResult.PASS);
+
         // Cancel active off-hand interactions while the selected MAIN-hand item is a block.
         // Note: passive off-hand effects (e.g. a totem) are not cancelled in this preview.
         UseBlockCallback.EVENT.register((player, level, hand, hit) ->
@@ -27,6 +36,6 @@ public final class TwoHandedBlocks implements ModInitializer {
         UseEntityCallback.EVENT.register((player, level, hand, entity, hit) ->
                 hand == InteractionHand.OFF_HAND && BlockRules.isCarrying(player)
                         ? InteractionResult.FAIL : InteractionResult.PASS);
-        LOGGER.info("Two-Handed Blocks (prototype) initialized");
+        LOGGER.info("Two-Handed Blocks 0.2.0 alpha attack restrictions initialized");
     }
 }

@@ -28,3 +28,10 @@
 5. Send both the error log and screenshots of both camera modes to refine the animation.
 
 **The mod is an original implementation**. No original Carry On code is copied or packaged.
+
+
+## 0.2.0-alpha1 incremental update
+
+New: cancel left-click block breaking and entity attacks via Fabric's `AttackBlockCallback` and `AttackEntityCallback` when a **main-hand** BlockItem is selected. The existing offhand action restriction remains. Block placement remains controlled by vanilla, as before.
+
+**Not yet implemented:** offhand-held block becoming the active carried block, preventing continuous-progress mining in all circumstances, universal interaction overrides (doors/chests vs placement), swim restrictions, mount controls, and final arm/scale polishing. This is a development milestone, not full 0.2.0. Test first with only Fabric API and this mod; confirm both break and attack suppression in survival mode and reactivation when selecting an ordinary item.
