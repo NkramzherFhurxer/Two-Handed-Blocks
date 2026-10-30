@@ -47,6 +47,6 @@ public final class TwoHandedBlocks implements ModInitializer {
         UseEntityCallback.EVENT.register((player, level, hand, entity, hit) ->
                 BlockRules.isCarrying(player) ? InteractionResult.FAIL : InteractionResult.PASS);
 
-        LOGGER.info("Two-Handed Blocks 0.2.0 alpha2 interaction restrictions initialized");
+        LOGGER.info("Two-Handed Blocks 0.2.0 alpha3 small-block exceptions initialized");
     }
 }

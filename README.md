@@ -22,3 +22,12 @@ Based on working 0.2.0 Alpha 1.
 5. Verify attacks and mining remain blocked when holding a block.
 
 If placement fails on an interactive block, report the precise target and what occurs.
+
+
+## Alpha 3 — small placeable blocks (initial list)
+
+Small items such as torches, levers, buttons, pressure plates, carpets, rails, candles, signs, flowers, saplings and pillows no longer trigger the two-handed pose **or** its interaction restrictions. The list is defined in `BlockRules.java` and can be expanded after testing.
+
+**Always two-handed:** cactus, all fences and fence gates, walls, full blocks, chests and barrels. Most modded blocks default to two-handed pending specific support.
+
+This is an **experimental classification**, not a complete catalog of all Minecraft 26.3 placeable items. Keep reporting exceptional cases. The offhand feature and swimming/mount controls are not yet implemented.
