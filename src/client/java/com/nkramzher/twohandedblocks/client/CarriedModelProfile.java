@@ -49,7 +49,7 @@ public final class CarriedModelProfile {
     public static float thirdPersonHorizontalOffset(Shape profile) {
         return switch (profile) {
             case FENCE_OR_WALL, BELL -> -0.15f;
-            default -> 0.18f;
+            default -> 0.20f;
         };
     }
 

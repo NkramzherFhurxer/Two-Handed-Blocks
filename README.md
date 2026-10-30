@@ -118,3 +118,12 @@ This is an **experimental classification**, not a complete catalog of all Minecr
 - Experimental visual calibration: build and validate with front-facing F5 screenshots before treating offsets as final.
 
 **Note:** Java 25 compilation and in-game runtime verification were not available in this environment.
+
+
+## Alpha 4 — Hotfix 6: microajuste del centrado F5
+
+- Solo cambia el desplazamiento X local de los modelos de dos manos de perfil DEFAULT/BED/HEAVY_CORE: +0.18 a **+0.20** (0.02 unidades hacia el lado que ya corregimos en Hotfix 5).
+- Incluye cofres, bloques completos y puertas de valla dentro del perfil DEFAULT.
+- Vallas y muros permanecen en **-0.15** (centrado ya confirmado). La campana permanece sin cambios.
+- Rotaciones, primera persona, escala, brazos, clasificación, ataques e interacciones: sin cambios.
+- Se requiere compilar y verificar visualmente en el juego; es un microajuste experimental.
