@@ -26,7 +26,7 @@ public final class BlockRules {
     // Individual small blocks that are carried naturally in one hand.
     private static final Set<String> ONE_HAND = Set.of(
             "torch", "soul_torch", "redstone_torch", "lantern", "soul_lantern",
-            "lever", "tripwire_hook", "lightning_rod", "chain", "iron_chain", "flower_pot", "iron_bars", "glass_pane", "red_shrub", "shelf_mushroom",
+            "lever", "tripwire_hook", "lightning_rod", "ladder", "chain", "iron_chain", "flower_pot", "iron_bars", "glass_pane", "red_shrub", "shelf_mushroom",
             "repeater", "comparator", "daylight_detector", "redstone_wire",
             "redstone", "lily_pad", "snow", "sea_pickle", "cobweb",
             "vine", "glow_lichen", "hanging_roots", "short_grass", "fern",

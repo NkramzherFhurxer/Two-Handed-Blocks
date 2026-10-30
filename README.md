@@ -69,3 +69,16 @@ This is an **experimental classification**, not a complete catalog of all Minecr
 - Preserved existing arm animations, block scale, offset, attack/interaction rules, and one-hand exceptions.
 - This compensating angle is a visual hypothesis based on screenshots and standard display transforms; it must be tested in-game with chest, barrel, and a normal cube.
 - Requires compilation in GitHub Actions (Java 25).
+
+
+## Alpha 4 Hotfix 2 — visual presets and ladder exception
+
+- Ladder (`minecraft:ladder`) is now one-handed; regular building stairs remain two-handed.
+- First-person arms are raised slightly and turned toward the object's sides. This is an experimental pose adjustment.
+- Added one central client-only helper, `CarriedModelProfile`, to orient different item-model families.
+- Fences and walls are yawed relative to the cube orientation; fence gates deliberately unchanged.
+- Beds receive a separate yaw preset, heavy core restores earlier yaw, and bells receive a small roll correction.
+- Brewing stand remains unchanged: showing its placed 3D block model requires a separate rendering strategy.
+- All attack, use, offhand and previous one-handed exceptions preserved.
+- Uses only the existing Minecraft/Fabric dependencies. This ZIP is SOURCE, not a compiled JAR.
+- NOTE: orientation choices are experimental and require first-person / third-person screenshots and GitHub Actions build verification. No Java 25 compiler is available in this environment.

@@ -3,6 +3,7 @@ package com.nkramzher.twohandedblocks.client.mixin;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.nkramzher.twohandedblocks.BlockRules;
+import com.nkramzher.twohandedblocks.client.CarriedModelProfile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.FirstPersonHandsAndItemsRenderer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -45,17 +46,23 @@ public abstract class FirstPersonBlocksMixin {
             for (HumanoidArm arm : HumanoidArm.values()) {
                 poses.pushPose();
                 float side = arm == HumanoidArm.RIGHT ? 1.0f : -1.0f;
-                poses.translate(-side * 0.45f, -0.04f, 0.02f);
-                poses.rotateDegrees(Axis.YP, side * 25.0f);
+                // Bring the hands slightly higher and in toward the block sides,
+                // instead of making them look like supports underneath it.
+                poses.translate(-side * 0.43f, 0.09f, -0.02f);
+                poses.rotateDegrees(Axis.YP, side * 32.0f);
                 this.renderPlayerArm(poses, nodes, light, inverseHeight, 0.0f, arm, playerState);
                 poses.popPose();
             }
         }
         poses.pushPose();
         poses.translate(0.0f, -0.24f, -0.83f);
-        // Compensate the ~45-degree default item-in-hand model yaw.
-        // Keep the current hand pose, centering, and scale unchanged.
-        poses.rotateDegrees(Axis.YP, 135.0f);
+        // Different model shapes need different orientations. This does not
+        // affect item rules and deliberately leaves fence gates untouched.
+        CarriedModelProfile.Shape profile = CarriedModelProfile.shape(stack);
+        poses.rotateDegrees(Axis.YP, CarriedModelProfile.yawDegrees(profile));
+        if (CarriedModelProfile.rollDegrees(profile) != 0.0f) {
+            poses.rotateDegrees(Axis.ZP, CarriedModelProfile.rollDegrees(profile));
+        }
         poses.scale(0.90f, 0.90f, 0.90f);
         state.mainHandRenderState.submit(poses, nodes, light, OverlayTexture.NO_OVERLAY, 0);
         poses.popPose();
