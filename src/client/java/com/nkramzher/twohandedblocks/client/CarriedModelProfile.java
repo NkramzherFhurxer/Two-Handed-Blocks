@@ -40,6 +40,19 @@ public final class CarriedModelProfile {
         };
     }
 
+    /**
+     * Third-person horizontal offsets, calibrated against user screenshots.
+     * Standard cubes and fence gates were left of the torso in F5 after HF4;
+     * fence and wall models were already aligned. The bell keeps its prior
+     * separate placement until the bell's model is investigated.
+     */
+    public static float thirdPersonHorizontalOffset(Shape profile) {
+        return switch (profile) {
+            case FENCE_OR_WALL, BELL -> -0.15f;
+            default -> 0.18f;
+        };
+    }
+
     public static float rollDegrees(Shape profile) {
         return profile == Shape.BELL ? 17.0f : 0.0f;
     }

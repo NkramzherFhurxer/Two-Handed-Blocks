@@ -29,12 +29,14 @@ public abstract class PlayerItemInHandLayerMixin {
 
         if (arm == state.mainArm) {
             poses.pushPose();
-            // Model coordinates are +Y down. Place the object between the two elbows.
-            // Move the entire two-handed object toward the player's right arm
-            // (screen left in the front-facing F5 camera). Its previous pose
-            // was visibly offset toward the player's left arm for ALL blocks.
-            poses.translate(-0.15f, 0.40f, -0.53f);
+            // Model coordinates are +Y down. Center the carried item between
+            // both arms. The model's baked third-person pivot is different for
+            // full blocks / fence gates than for fence / wall models.
+            // Preserve the proven fence / wall alignment rather than applying
+            // one universal X offset to every model.
             CarriedModelProfile.Shape profile = CarriedModelProfile.shape(stack);
+            poses.translate(CarriedModelProfile.thirdPersonHorizontalOffset(profile),
+                    0.40f, -0.53f);
             if (profile == CarriedModelProfile.Shape.BELL) {
                 // The bell has a special item model: keep the last tested pose
                 // until we deliberately revisit its geometry.

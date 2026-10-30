@@ -104,3 +104,17 @@ This is an **experimental classification**, not a complete catalog of all Minecr
 - La campana conserva su perfil de rotación independiente, que se revisará después.
 - Sin cambios en primera persona, clasificación de objetos, ataques, interacciones, inventario ni exclusiones de `light`, `barrier` y `structure_void`.
 - **Visualmente experimental**: verificar con cofres, césped, vallas, muros y puerta de valla. No se pudo compilar ni probar con el juego en este entorno.
+
+
+## Alpha 4 — Hotfix 5: centering of carried items in F5
+
+- Keep all the third-person orientation / rotations from Hotfix 4 (they were validated upright).
+- Add shape-specific third-person X position to compensate for differently-pivoted item models.
+- Full blocks, chests, beds, heavy core and fence gates use +0.18 local X (previously -0.15), targeting centered placement between the hands.
+- Fences and walls remain at -0.15 local X; user-confirmed centered in Hotfix 4.
+- Bell retains its previous offset and visual preset pending a separate fix.
+- First-person rendering, arm animations, attacks, placement and interaction rules, and item classifications are unchanged.
+- Light, barrier and structure void remain excluded from carrying logic.
+- Experimental visual calibration: build and validate with front-facing F5 screenshots before treating offsets as final.
+
+**Note:** Java 25 compilation and in-game runtime verification were not available in this environment.
