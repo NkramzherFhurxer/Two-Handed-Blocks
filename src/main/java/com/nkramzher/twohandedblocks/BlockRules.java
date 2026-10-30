@@ -2,7 +2,7 @@ package com.nkramzher.twohandedblocks;
 
 import java.util.Set;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -79,7 +79,7 @@ public final class BlockRules {
 
     public static boolean isCarriedBlock(ItemStack stack) {
         if (stack.isEmpty() || !(stack.getItem() instanceof BlockItem)) return false;
-        ResourceLocation id = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        Identifier id = BuiltInRegistries.ITEM.getKey(stack.getItem());
         if (!"minecraft".equals(id.getNamespace())) return true; // other mods: default to two hands
         String path = id.getPath();
         if (twoHands(path)) return true;
