@@ -62,3 +62,10 @@ This is an **experimental classification**, not a complete catalog of all Minecr
 - Third-person arm angles tuned for a side-grip pose.
 - No changes to item classifications, combat restrictions, or interactions.
 - Requires GitHub Actions compilation and in-game evaluation in both views, including left-handed player settings.
+
+
+## Alpha 4 Hotfix 1 — item orientation (experimental)
+- In both first and third person, adjusted the carrying block's Y rotation from 180 to 135 degrees to counteract vanilla block item-display yaw (~45 degrees).
+- Preserved existing arm animations, block scale, offset, attack/interaction rules, and one-hand exceptions.
+- This compensating angle is a visual hypothesis based on screenshots and standard display transforms; it must be tested in-game with chest, barrel, and a normal cube.
+- Requires compilation in GitHub Actions (Java 25).

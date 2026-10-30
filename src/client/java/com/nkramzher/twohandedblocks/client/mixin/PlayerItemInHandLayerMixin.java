@@ -31,7 +31,9 @@ public abstract class PlayerItemInHandLayerMixin {
             // Model coordinates are +Y down. Place the object between the two elbows.
             poses.translate(0.0f, 0.40f, -0.53f);
             poses.rotateDegrees(Axis.XP, -90.0f);
-            poses.rotateDegrees(Axis.YP, 180.0f);
+            // Compensate the ~45-degree default item-in-hand model yaw.
+        // Keep the current hand pose, centering, and scale unchanged.
+        poses.rotateDegrees(Axis.YP, 135.0f);
             poses.scale(1.33f, 1.33f, 1.33f);
             item.submit(poses, nodes, light, OverlayTexture.NO_OVERLAY, state.outlineColor);
             poses.popPose();

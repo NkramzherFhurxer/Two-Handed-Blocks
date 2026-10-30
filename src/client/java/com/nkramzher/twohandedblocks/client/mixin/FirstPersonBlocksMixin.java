@@ -53,7 +53,9 @@ public abstract class FirstPersonBlocksMixin {
         }
         poses.pushPose();
         poses.translate(0.0f, -0.24f, -0.83f);
-        poses.rotateDegrees(Axis.YP, 180.0f);
+        // Compensate the ~45-degree default item-in-hand model yaw.
+        // Keep the current hand pose, centering, and scale unchanged.
+        poses.rotateDegrees(Axis.YP, 135.0f);
         poses.scale(0.90f, 0.90f, 0.90f);
         state.mainHandRenderState.submit(poses, nodes, light, OverlayTexture.NO_OVERLAY, 0);
         poses.popPose();
