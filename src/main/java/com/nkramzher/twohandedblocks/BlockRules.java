@@ -17,8 +17,8 @@ public final class BlockRules {
     private static final Set<String> TWO_HANDS = Set.of(
             "cactus", "nether_brick_fence", "tinted_glass",
             "mossy_cobblestone_wall", "cobblestone_wall", "bamboo_block", "stripped_bamboo_block",
-            "big_dripleaf", "small_dripleaf", "tall_grass", "large_fern", "tall_seagrass",
-            "sunflower", "lilac", "rose_bush", "peony", "pitcher_plant",
+            "big_dripleaf", "small_dripleaf", "tall_seagrass",
+            "rose_bush", "peony",
             "dragon_head", "skeleton_skull", "wither_skeleton_skull", "zombie_head",
             "creeper_head", "piglin_head", "player_head"
     );
@@ -42,6 +42,9 @@ public final class BlockRules {
             "sculk_vein", "spore_blossom", "hanging_sign", "suspicious_stew",
             "resin_clump", "turtle_egg", "sniffer_egg", "frogspawn",
             "kelp", "seagrass", "weeping_vines", "twisting_vines",
+            "pitcher_plant", "pitcher_pod", "torchflower_seeds", "sunflower", "lilac",
+            "tall_grass", "large_fern", "mangrove_propagule", "short_dry_grass",
+            "pale_hanging_moss", "sulfur_spike", "end_rod", "tripwire",
             "nether_wart", "wheat_seeds", "beetroot_seeds", "pumpkin_seeds",
             "melon_seeds", "sweet_berries", "glow_berries", "carrot", "potato"
     );
@@ -67,7 +70,9 @@ public final class BlockRules {
                 || path.endsWith("_shelf_fungus")
                 || path.endsWith("_mushroom")
                 || path.endsWith("_petals")
-                || path.endsWith("_leaves_carpet");
+                || path.endsWith("_leaves_carpet")
+                || path.endsWith("copper_chain")
+                || path.endsWith("copper_lantern");
     }
 
     private static boolean twoHands(String path) {

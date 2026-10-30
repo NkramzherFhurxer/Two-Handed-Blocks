@@ -31,3 +31,12 @@ Small items such as torches, levers, buttons, pressure plates, carpets, rails, c
 **Always two-handed:** cactus, all fences and fence gates, walls, full blocks, chests and barrels. Most modded blocks default to two-handed pending specific support.
 
 This is an **experimental classification**, not a complete catalog of all Minecraft 26.3 placeable items. Keep reporting exceptional cases. The offhand feature and swimming/mount controls are not yet implemented.
+
+
+## Alpha 3 Hotfix 2 — one-hand exceptions
+- One hand: copper chains (all oxidation/waxed variants), iron chain, copper lanterns (all variants), pitcher plant/pod, sulfur spike, pale hanging moss, mangrove propagule, short dry grass, sunflower, tall grass, large fern, lilac, torchflower seeds, end rod, string/tripwire, and all four amethyst buds/clusters.
+- Removed the explicit two-handed overrides that previously captured pitcher plant, sunflower, tall grass, large fern and lilac.
+- Two hands remain mandatory for cactus, fences/fence gates, walls and bell.
+- Note: common string is a non-BlockItem and already remains one-handed; tripwire is included defensively.
+- No changes to combat, placing, interaction code or animation code.
+- Needs compilation and in-game verification.
