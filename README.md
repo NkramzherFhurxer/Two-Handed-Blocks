@@ -93,3 +93,14 @@ This is an **experimental classification**, not a complete catalog of all Minecr
 - Conserva clasificación, restricciones e inventario de la versión anterior.
 - Esta compensación está diseñada para los modelos normales de los bloques de Minecraft; algunos modelos especiales y resource packs pueden necesitar calibración adicional.
 - Pendiente de compilar y verificar visualmente en Minecraft 26.3.
+
+
+## Alpha 4 — Hotfix 4: ajuste F5 (experimental)
+
+- **Solo tercera persona**: se agrega un giro de 180° alrededor de Z para intentar corregir los bloques boca abajo observados en Hotfix 3.
+- El objeto completo se mueve `-0.15` unidades en el eje X local para compensar su desplazamiento común hacia el brazo izquierdo del personaje.
+- Vallas y muros reciben `+90°` de giro horizontal adicional para presentar las conexiones de frente, tomando las puertas de valla como referencia.
+- Las puertas de valla conservan su perfil de orientación horizontal; no reciben el giro extra de vallas/muros.
+- La campana conserva su perfil de rotación independiente, que se revisará después.
+- Sin cambios en primera persona, clasificación de objetos, ataques, interacciones, inventario ni exclusiones de `light`, `barrier` y `structure_void`.
+- **Visualmente experimental**: verificar con cofres, césped, vallas, muros y puerta de valla. No se pudo compilar ni probar con el juego en este entorno.

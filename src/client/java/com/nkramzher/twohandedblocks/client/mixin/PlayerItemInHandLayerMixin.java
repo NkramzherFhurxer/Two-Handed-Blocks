@@ -30,7 +30,10 @@ public abstract class PlayerItemInHandLayerMixin {
         if (arm == state.mainArm) {
             poses.pushPose();
             // Model coordinates are +Y down. Place the object between the two elbows.
-            poses.translate(0.0f, 0.40f, -0.53f);
+            // Move the entire two-handed object toward the player's right arm
+            // (screen left in the front-facing F5 camera). Its previous pose
+            // was visibly offset toward the player's left arm for ALL blocks.
+            poses.translate(-0.15f, 0.40f, -0.53f);
             CarriedModelProfile.Shape profile = CarriedModelProfile.shape(stack);
             if (profile == CarriedModelProfile.Shape.BELL) {
                 // The bell has a special item model: keep the last tested pose
@@ -39,13 +42,24 @@ public abstract class PlayerItemInHandLayerMixin {
                 poses.rotateDegrees(Axis.YP, CarriedModelProfile.yawDegrees(profile));
                 poses.rotateDegrees(Axis.ZP, CarriedModelProfile.rollDegrees(profile));
             } else {
-                // The item was already resolved for THIRD_PERSON_*_HAND by Minecraft.
-                // Vanilla block item models generally add a 75-degree X pitch
-                // followed by a 45-degree Y yaw, so adding our former -90/135
-                // rotated an ALREADY ROTATED item (diagonal and tilted in F5).
-                // Reverse the model's hand-view rotation in reverse order,
-                // leaving the model upright and front-facing in the carried pose.
-                // First-person uses its own mixin and is entirely unaffected.
+                // The prior -45 Y / -75 X compensation successfully made
+                // full blocks face forward in F5, but rendered their top faces
+                // at the bottom (visually upside down). Turn the held model
+                // through 180 degrees around the screen-facing Z axis BEFORE
+                // cancelling the hand-model pitch/yaw, keeping the front face
+                // flat while making the top point upward.
+                poses.rotateDegrees(Axis.ZP, 180.0f);
+
+                // Fence and wall item models are edge-on with the normal cube
+                // orientation. Rotate only this family a quarter turn to show
+                // the horizontal connectors, as with a fence gate. The gate
+                // itself remains untouched by this family-specific extra yaw.
+                if (profile == CarriedModelProfile.Shape.FENCE_OR_WALL) {
+                    poses.rotateDegrees(Axis.YP, 90.0f);
+                }
+
+                // Cancel the default third-person model transform. The 1st-
+                // person rendering path is deliberately not modified here.
                 poses.rotateDegrees(Axis.YP, -45.0f);
                 poses.rotateDegrees(Axis.XP, -75.0f);
             }
