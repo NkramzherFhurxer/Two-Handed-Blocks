@@ -45,16 +45,16 @@ public abstract class FirstPersonBlocksMixin {
             for (HumanoidArm arm : HumanoidArm.values()) {
                 poses.pushPose();
                 float side = arm == HumanoidArm.RIGHT ? 1.0f : -1.0f;
-                poses.translate(-side * 0.33f, -0.1f, 0.08f);
-                poses.rotateDegrees(Axis.YP, side * 18.0f);
+                poses.translate(-side * 0.45f, -0.04f, 0.02f);
+                poses.rotateDegrees(Axis.YP, side * 25.0f);
                 this.renderPlayerArm(poses, nodes, light, inverseHeight, 0.0f, arm, playerState);
                 poses.popPose();
             }
         }
         poses.pushPose();
-        poses.translate(0.0f, -0.29f, -0.60f);
+        poses.translate(0.0f, -0.24f, -0.83f);
         poses.rotateDegrees(Axis.YP, 180.0f);
-        poses.scale(1.25f, 1.25f, 1.25f);
+        poses.scale(0.90f, 0.90f, 0.90f);
         state.mainHandRenderState.submit(poses, nodes, light, OverlayTexture.NO_OVERLAY, 0);
         poses.popPose();
         poses.popPose();

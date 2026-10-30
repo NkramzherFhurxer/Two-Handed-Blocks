@@ -29,10 +29,10 @@ public abstract class PlayerItemInHandLayerMixin {
         if (arm == state.mainArm) {
             poses.pushPose();
             // Model coordinates are +Y down. Place the object between the two elbows.
-            poses.translate(0.0f, 0.43f, -0.58f);
+            poses.translate(0.0f, 0.40f, -0.53f);
             poses.rotateDegrees(Axis.XP, -90.0f);
             poses.rotateDegrees(Axis.YP, 180.0f);
-            poses.scale(1.25f, 1.25f, 1.25f);
+            poses.scale(1.33f, 1.33f, 1.33f);
             item.submit(poses, nodes, light, OverlayTexture.NO_OVERLAY, state.outlineColor);
             poses.popPose();
         }

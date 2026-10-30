@@ -54,3 +54,11 @@ This is an **experimental classification**, not a complete catalog of all Minecr
 - Retains the Hotfix 3 fixes for `minecraft:iron_chain` and `minecraft:string`.
 - Preserves existing two-handed cactus, fences, fence gates, walls, and other block rules.
 - Build and in-game verification are still pending.
+
+
+## Alpha 4 — visual tuning (experimental)
+- First-person block size reduced (1.25 to 0.90), shifted away from the camera; arms are offset outward and angled toward its sides.
+- Third-person block enlarged slightly (1.25 to 1.33) with centering adjusted.
+- Third-person arm angles tuned for a side-grip pose.
+- No changes to item classifications, combat restrictions, or interactions.
+- Requires GitHub Actions compilation and in-game evaluation in both views, including left-handed player settings.

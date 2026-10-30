@@ -25,11 +25,11 @@ public abstract class PlayerModelMixin extends HumanoidModel<AvatarRenderState> 
         if (state.isSpectator || !BlockRules.isCarriedBlock(selected)) return;
 
         // Rest pose: elbows forward and wrists turned in toward the middle of the chest.
-        this.rightArm.xRot = -1.15f;
-        this.leftArm.xRot = -1.15f;
-        this.rightArm.yRot = -0.20f;
-        this.leftArm.yRot = 0.20f;
-        this.rightArm.zRot = -0.35f;
-        this.leftArm.zRot = 0.35f;
+        this.rightArm.xRot = -1.28f;
+        this.leftArm.xRot = -1.28f;
+        this.rightArm.yRot = -0.12f;
+        this.leftArm.yRot = 0.12f;
+        this.rightArm.zRot = -0.18f;
+        this.leftArm.zRot = 0.18f;
     }
 }
