@@ -82,3 +82,14 @@ This is an **experimental classification**, not a complete catalog of all Minecr
 - All attack, use, offhand and previous one-handed exceptions preserved.
 - Uses only the existing Minecraft/Fabric dependencies. This ZIP is SOURCE, not a compiled JAR.
 - NOTE: orientation choices are experimental and require first-person / third-person screenshots and GitHub Actions build verification. No Java 25 compiler is available in this environment.
+
+
+## Alpha 4 — Hotfix 3: tercera persona y bloques administrativos
+
+- Se excluyen `minecraft:light` (todos los niveles de iluminación), `minecraft:barrier` y `minecraft:structure_void` de la postura de dos manos y de sus restricciones.
+- En tercera persona, la mayoría de los modelos dejan de recibir el giro adicional de -90° X / 135° Y. En su lugar se aplica una compensación de -45° Y y -75° X para cancelar la rotación habitual de los modelos de objeto sostenidos en la mano.
+- **Primera persona sin cambios:** mantiene las orientaciones aprobadas de cofres, vallas, muros y demás.
+- **Campana sin cambios:** conservará el perfil visual anterior hasta que se revise por separado.
+- Conserva clasificación, restricciones e inventario de la versión anterior.
+- Esta compensación está diseñada para los modelos normales de los bloques de Minecraft; algunos modelos especiales y resource packs pueden necesitar calibración adicional.
+- Pendiente de compilar y verificar visualmente en Minecraft 26.3.

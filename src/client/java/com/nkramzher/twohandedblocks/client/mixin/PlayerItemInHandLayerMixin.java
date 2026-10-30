@@ -31,11 +31,23 @@ public abstract class PlayerItemInHandLayerMixin {
             poses.pushPose();
             // Model coordinates are +Y down. Place the object between the two elbows.
             poses.translate(0.0f, 0.40f, -0.53f);
-            poses.rotateDegrees(Axis.XP, -90.0f);
             CarriedModelProfile.Shape profile = CarriedModelProfile.shape(stack);
-            poses.rotateDegrees(Axis.YP, CarriedModelProfile.yawDegrees(profile));
-            if (CarriedModelProfile.rollDegrees(profile) != 0.0f) {
+            if (profile == CarriedModelProfile.Shape.BELL) {
+                // The bell has a special item model: keep the last tested pose
+                // until we deliberately revisit its geometry.
+                poses.rotateDegrees(Axis.XP, -90.0f);
+                poses.rotateDegrees(Axis.YP, CarriedModelProfile.yawDegrees(profile));
                 poses.rotateDegrees(Axis.ZP, CarriedModelProfile.rollDegrees(profile));
+            } else {
+                // The item was already resolved for THIRD_PERSON_*_HAND by Minecraft.
+                // Vanilla block item models generally add a 75-degree X pitch
+                // followed by a 45-degree Y yaw, so adding our former -90/135
+                // rotated an ALREADY ROTATED item (diagonal and tilted in F5).
+                // Reverse the model's hand-view rotation in reverse order,
+                // leaving the model upright and front-facing in the carried pose.
+                // First-person uses its own mixin and is entirely unaffected.
+                poses.rotateDegrees(Axis.YP, -45.0f);
+                poses.rotateDegrees(Axis.XP, -75.0f);
             }
             poses.scale(1.33f, 1.33f, 1.33f);
             item.submit(poses, nodes, light, OverlayTexture.NO_OVERLAY, state.outlineColor);
