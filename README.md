@@ -40,3 +40,17 @@ This is an **experimental classification**, not a complete catalog of all Minecr
 - Note: common string is a non-BlockItem and already remains one-handed; tripwire is included defensively.
 - No changes to combat, placing, interaction code or animation code.
 - Needs compilation and in-game verification.
+
+## Alpha 3 Hotfix 3
+- `minecraft:iron_chain` is one-handed (older `chain` retained for compatibility).
+- `minecraft:string` is always one-handed; this exception is checked before the BlockItem classification.
+- All other classification and interaction restrictions are unchanged.
+
+
+## Alpha 3 — Hotfix 4
+
+- One-handed: all vanilla trapdoors (wood, iron, copper variants, poplar).
+- One-handed: all vanilla shelves (including poplar).
+- Retains the Hotfix 3 fixes for `minecraft:iron_chain` and `minecraft:string`.
+- Preserves existing two-handed cactus, fences, fence gates, walls, and other block rules.
+- Build and in-game verification are still pending.

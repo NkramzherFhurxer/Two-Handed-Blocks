@@ -26,7 +26,7 @@ public final class BlockRules {
     // Individual small blocks that are carried naturally in one hand.
     private static final Set<String> ONE_HAND = Set.of(
             "torch", "soul_torch", "redstone_torch", "lantern", "soul_lantern",
-            "lever", "tripwire_hook", "lightning_rod", "chain", "flower_pot", "iron_bars", "glass_pane", "red_shrub", "shelf_mushroom",
+            "lever", "tripwire_hook", "lightning_rod", "chain", "iron_chain", "flower_pot", "iron_bars", "glass_pane", "red_shrub", "shelf_mushroom",
             "repeater", "comparator", "daylight_detector", "redstone_wire",
             "redstone", "lily_pad", "snow", "sea_pickle", "cobweb",
             "vine", "glow_lichen", "hanging_roots", "short_grass", "fern",
@@ -44,7 +44,7 @@ public final class BlockRules {
             "kelp", "seagrass", "weeping_vines", "twisting_vines",
             "pitcher_plant", "pitcher_pod", "torchflower_seeds", "sunflower", "lilac",
             "tall_grass", "large_fern", "mangrove_propagule", "short_dry_grass",
-            "pale_hanging_moss", "sulfur_spike", "end_rod", "tripwire",
+            "pale_hanging_moss", "sulfur_spike", "end_rod", "tripwire", "string",
             "nether_wart", "wheat_seeds", "beetroot_seeds", "pumpkin_seeds",
             "melon_seeds", "sweet_berries", "glow_berries", "carrot", "potato"
     );
@@ -66,6 +66,8 @@ public final class BlockRules {
                 || path.endsWith("_wall_fan")
                 || path.endsWith("_banner")
                 || path.endsWith("_cushion")
+                || path.endsWith("_trapdoor")
+                || path.endsWith("_shelf")
                 || path.endsWith("_stained_glass_pane")
                 || path.endsWith("_shelf_fungus")
                 || path.endsWith("_mushroom")
@@ -83,8 +85,11 @@ public final class BlockRules {
     }
 
     public static boolean isCarriedBlock(ItemStack stack) {
-        if (stack.isEmpty() || !(stack.getItem() instanceof BlockItem)) return false;
+        if (stack.isEmpty()) return false;
         Identifier id = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        // String is an item; when placed it becomes tripwire. Never use the two-hand pose.
+        if ("minecraft".equals(id.getNamespace()) && "string".equals(id.getPath())) return false;
+        if (!(stack.getItem() instanceof BlockItem)) return false;
         if (!"minecraft".equals(id.getNamespace())) return true; // other mods: default to two hands
         String path = id.getPath();
         if (twoHands(path)) return true;
