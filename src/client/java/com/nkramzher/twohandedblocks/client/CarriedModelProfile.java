@@ -63,6 +63,9 @@ public final class CarriedModelProfile {
         if (stack.isEmpty()) return thirdPersonHorizontalOffset(Shape.DEFAULT);
         Identifier id = BuiltInRegistries.ITEM.getKey(stack.getItem());
         if (id != null && "minecraft".equals(id.getNamespace())) {
+            // Only regular doors: approx. 8px to screen-left in third person.
+            // Excludes trapdoors and fence gates; keep all existing offsets.
+            if (isVanillaDoor(stack)) return 0.115f;
             return switch (id.getPath()) {
                 // Example item-specific overrides (uncomment only if needed):
                 // case "chest" -> 0.155f;
