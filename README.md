@@ -127,3 +127,19 @@ This is an **experimental classification**, not a complete catalog of all Minecr
 - Vallas y muros permanecen en **-0.15** (centrado ya confirmado). La campana permanece sin cambios.
 - Rotaciones, primera persona, escala, brazos, clasificación, ataques e interacciones: sin cambios.
 - Se requiere compilar y verificar visualmente en el juego; es un microajuste experimental.
+
+
+## Alpha 4 Hotfix 7 (third-person fine alignment + compile fix)
+
+- Fixes the `ItemStack cannot be converted to Shape` Java compilation error by
+  adding an `ItemStack` overload in `CarriedModelProfile` and calling it from
+  `PlayerItemInHandLayerMixin`.
+- Horizontal offsets in third person: standard blocks + fence gates `0.19f`
+  (was `0.20f`), bell `-0.16f` (was `-0.15f`).
+- Fences and walls stay `-0.15f` exactly; they were correctly centered already.
+- Adds commented-out examples for future per-item offsets (`chest`,
+  `grass_block`, `oak_fence_gate`). Uncomment them individually as needed.
+- No changes to first-person rendering, orientation, interaction rules, or
+  one-handed exceptions.
+- Static validation done; full Gradle build with Java 25 and in-game test
+  remain to be checked in GitHub Actions.

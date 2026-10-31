@@ -48,9 +48,30 @@ public final class CarriedModelProfile {
      */
     public static float thirdPersonHorizontalOffset(Shape profile) {
         return switch (profile) {
-            case FENCE_OR_WALL, BELL -> -0.15f;
-            default -> 0.18f;
+            case FENCE_OR_WALL -> -0.15f; // Already perfectly centered; do not move.
+            case BELL -> -0.16f;          // Tiny correction; detailed bell pose later.
+            default -> 0.19f;            // 0.01 toward screen-left vs Hotfix 6.
         };
+    }
+
+    /**
+     * The layer renders an ItemStack, not a Shape. This overload fixes the
+     * compile error and lets you fine-tune individual vanilla items later.
+     * Uncomment a case and change its float to override just that item.
+     */
+    public static float thirdPersonHorizontalOffset(ItemStack stack) {
+        if (stack.isEmpty()) return thirdPersonHorizontalOffset(Shape.DEFAULT);
+        Identifier id = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        if (id != null && "minecraft".equals(id.getNamespace())) {
+            return switch (id.getPath()) {
+                // Example item-specific overrides (uncomment only if needed):
+                // case "chest" -> 0.19f;
+                // case "grass_block" -> 0.19f;
+                // case "oak_fence_gate" -> 0.19f;
+                default -> thirdPersonHorizontalOffset(shape(stack));
+            };
+        }
+        return thirdPersonHorizontalOffset(shape(stack));
     }
 
     public static float rollDegrees(Shape profile) {
