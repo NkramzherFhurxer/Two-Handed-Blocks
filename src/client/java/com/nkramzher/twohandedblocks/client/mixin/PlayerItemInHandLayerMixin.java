@@ -35,7 +35,7 @@ public abstract class PlayerItemInHandLayerMixin {
             // Preserve the proven fence / wall alignment rather than applying
             // one universal X offset to every model.
             CarriedModelProfile.Shape profile = CarriedModelProfile.shape(stack);
-            poses.translate(CarriedModelProfile.thirdPersonHorizontalOffset(profile),
+            poses.translate(CarriedModelProfile.thirdPersonHorizontalOffset(stack),
                     0.40f, -0.53f);
             if (profile == CarriedModelProfile.Shape.BELL) {
                 // The bell has a special item model: keep the last tested pose
