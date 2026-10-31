@@ -65,7 +65,7 @@ public final class CarriedModelProfile {
         if (id != null && "minecraft".equals(id.getNamespace())) {
             // Vanilla doors: dedicated third-person offset for the 3D door models.
             // Keep their 90-degree rotation and leave trapdoors/fence gates untouched.
-            if (isVanillaDoor(stack)) return 0.035f;
+            if (isVanillaDoor(stack)) return -0.115f;
             return switch (id.getPath()) {
                 // Example item-specific overrides (uncomment only if needed):
                 // case "chest" -> 0.155f;
