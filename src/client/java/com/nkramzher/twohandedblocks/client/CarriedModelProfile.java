@@ -74,6 +74,14 @@ public final class CarriedModelProfile {
         return thirdPersonHorizontalOffset(shape(stack));
     }
 
+    /** Normal vanilla doors only. Excludes trapdoors and fence gates. */
+    public static boolean isVanillaDoor(ItemStack stack) {
+        if (stack.isEmpty()) return false;
+        Identifier id = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        return id != null && "minecraft".equals(id.getNamespace())
+                && id.getPath().endsWith("_door");
+    }
+
     public static float rollDegrees(Shape profile) {
         return profile == Shape.BELL ? 17.0f : 0.0f;
     }

@@ -52,6 +52,12 @@ public abstract class PlayerItemInHandLayerMixin {
                 // flat while making the top point upward.
                 poses.rotateDegrees(Axis.ZP, 180.0f);
 
+                // Turn only regular vanilla doors by +90° in third person.
+                // Trapdoors and fence gates retain their existing alignment.
+                if (CarriedModelProfile.isVanillaDoor(stack)) {
+                    poses.rotateDegrees(Axis.YP, 90.0f);
+                }
+
                 // Fence and wall item models are edge-on with the normal cube
                 // orientation. Rotate only this family a quarter turn to show
                 // the horizontal connectors, as with a fence gate. The gate

@@ -60,6 +60,10 @@ public abstract class FirstPersonBlocksMixin {
         // affect item rules and deliberately leaves fence gates untouched.
         CarriedModelProfile.Shape profile = CarriedModelProfile.shape(stack);
         poses.rotateDegrees(Axis.YP, CarriedModelProfile.yawDegrees(profile));
+        // Turn only regular vanilla door items by +90° in first person.
+        if (CarriedModelProfile.isVanillaDoor(stack)) {
+            poses.rotateDegrees(Axis.YP, 90.0f);
+        }
         if (CarriedModelProfile.rollDegrees(profile) != 0.0f) {
             poses.rotateDegrees(Axis.ZP, CarriedModelProfile.rollDegrees(profile));
         }
