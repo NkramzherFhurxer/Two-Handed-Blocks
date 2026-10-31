@@ -50,7 +50,7 @@ public final class CarriedModelProfile {
         return switch (profile) {
             case FENCE_OR_WALL -> -0.15f; // Already perfectly centered; do not move.
             case BELL -> -0.16f;          // Tiny correction; detailed bell pose later.
-            default -> 0.19f;            // 0.01 toward screen-left vs Hotfix 6.
+            default -> 0.18f;            // Another tiny adjustment toward screen-left; fences and walls unchanged.
         };
     }
 
@@ -65,9 +65,9 @@ public final class CarriedModelProfile {
         if (id != null && "minecraft".equals(id.getNamespace())) {
             return switch (id.getPath()) {
                 // Example item-specific overrides (uncomment only if needed):
-                // case "chest" -> 0.19f;
-                // case "grass_block" -> 0.19f;
-                // case "oak_fence_gate" -> 0.19f;
+                // case "chest" -> 0.18f;
+                // case "grass_block" -> 0.18f;
+                // case "oak_fence_gate" -> 0.18f;
                 default -> thirdPersonHorizontalOffset(shape(stack));
             };
         }
