@@ -85,11 +85,21 @@ public final class BlockRules {
                 || path.endsWith("_wall");
     }
 
+    private static boolean isVanillaVehicle(String path) {
+        return path.endsWith("_boat") || path.endsWith("_chest_boat")
+                || path.equals("bamboo_raft") || path.equals("bamboo_chest_raft")
+                || path.equals("minecart") || path.endsWith("_minecart");
+    }
+
     public static boolean isCarriedBlock(ItemStack stack) {
         if (stack.isEmpty()) return false;
         Identifier id = BuiltInRegistries.ITEM.getKey(stack.getItem());
         // String is an item; when placed it becomes tripwire. Never use the two-hand pose.
         if ("minecraft".equals(id.getNamespace()) && "string".equals(id.getPath())) return false;
+        // Boats (including chest boats and bamboo rafts) and all minecart variants
+        // are placeable vehicles, not BlockItems. Carry vanilla vehicles in both hands.
+        // Keep the namespace check so unrelated modded items are not captured.
+        if ("minecraft".equals(id.getNamespace()) && isVanillaVehicle(id.getPath())) return true;
         if (!(stack.getItem() instanceof BlockItem)) return false;
         if (!"minecraft".equals(id.getNamespace())) return true; // other mods: default to two hands
         String path = id.getPath();
