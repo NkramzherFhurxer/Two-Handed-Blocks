@@ -100,16 +100,8 @@ public final class CarriedModelProfile {
         // Building stairs, not ladders.
         if (name.endsWith("_stairs")) return 180.0f;
         if (name.equals("crafting_table")) return 180.0f;
-        if (name.equals("lectern")) return -90.0f; // turn to the left
+        if (name.equals("lectern")) return 90.0f; // 180 degrees from the previous -90-degree orientation
         return 0.0f;
-    }
-
-    /** Only the normal chest turns right in third person, not trapped/ender chests. */
-    public static float thirdPersonExtraYawDegrees(ItemStack stack) {
-        if (stack.isEmpty()) return 0.0f;
-        Identifier id = BuiltInRegistries.ITEM.getKey(stack.getItem());
-        return id != null && "minecraft".equals(id.getNamespace())
-                && "chest".equals(id.getPath()) ? 90.0f : 0.0f;
     }
 
     public static float rollDegrees(Shape profile) {
