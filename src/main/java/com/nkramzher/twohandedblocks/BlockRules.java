@@ -18,13 +18,15 @@ public final class BlockRules {
             "cactus", "nether_brick_fence", "tinted_glass",
             "mossy_cobblestone_wall", "cobblestone_wall", "bamboo_block", "stripped_bamboo_block",
             "big_dripleaf", "small_dripleaf", "tall_seagrass",
-            "rose_bush", "peony",
-            "dragon_head", "skeleton_skull", "wither_skeleton_skull", "zombie_head",
-            "creeper_head", "piglin_head", "player_head"
+            "rose_bush", "peony"
     );
 
     // Individual small blocks that are carried naturally in one hand.
     private static final Set<String> ONE_HAND = Set.of(
+            // All seven vanilla heads are small decorative/wearable items.
+            // Keep the dragon head in the same family for consistent handling.
+            "dragon_head", "skeleton_skull", "wither_skeleton_skull", "zombie_head",
+            "creeper_head", "piglin_head", "player_head",
             "light", "barrier", "structure_void",
             "torch", "soul_torch", "redstone_torch", "lantern", "soul_lantern",
             "lever", "tripwire_hook", "lightning_rod", "ladder", "chain", "iron_chain", "flower_pot", "iron_bars", "glass_pane", "red_shrub", "shelf_mushroom",
