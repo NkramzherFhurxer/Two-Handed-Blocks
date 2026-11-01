@@ -58,13 +58,6 @@ public abstract class PlayerItemInHandLayerMixin {
                     poses.rotateDegrees(Axis.YP, 90.0f);
                 }
 
-                // Turn only the ordinary vanilla chest 90 degrees to the right
-                // in third person. Leave trapped/ender chests and all doors alone.
-                float extraYaw = CarriedModelProfile.thirdPersonExtraYawDegrees(stack);
-                if (extraYaw != 0.0f) {
-                    poses.rotateDegrees(Axis.YP, extraYaw);
-                }
-
                 // Fence and wall item models are edge-on with the normal cube
                 // orientation. Rotate only this family a quarter turn to show
                 // the horizontal connectors, as with a fence gate. The gate
