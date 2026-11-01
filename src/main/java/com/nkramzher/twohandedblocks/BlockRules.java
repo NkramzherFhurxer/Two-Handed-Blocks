@@ -34,7 +34,7 @@ public final class BlockRules {
             "redstone", "lily_pad", "snow", "sea_pickle", "cobweb",
             "vine", "glow_lichen", "hanging_roots", "short_grass", "fern",
             "dead_bush", "bush", "firefly_bush", "leaf_litter", "wildflowers",
-            "pink_petals", "dry_grass", "tall_dry_grass", "dandelion", "poppy",
+            "pink_petals", "dry_grass", "tall_dry_grass", "dandelion", "golden_dandelion", "poppy",
             "blue_orchid", "allium", "azure_bluet", "oxeye_daisy", "cornflower",
             "lily_of_the_valley", "wither_rose", "torchflower", "open_eyeblossom",
             "closed_eyeblossom", "brown_mushroom", "red_mushroom", "crimson_fungus",
