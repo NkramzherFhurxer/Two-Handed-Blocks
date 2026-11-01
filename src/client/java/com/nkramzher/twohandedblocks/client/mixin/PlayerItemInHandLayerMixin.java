@@ -58,10 +58,12 @@ public abstract class PlayerItemInHandLayerMixin {
                     poses.rotateDegrees(Axis.YP, 90.0f);
                 }
 
-                // Rotate the eleven vanilla chests 180 degrees horizontally in F5.
-                // Use the normal shared offset; no chest-specific translation.
+                // Present the latches of all eleven vanilla chest variants toward
+                // the viewer in F5, like the front of furnaces. The chests use a
+                // special renderer with a different model-facing convention.
+                // No offset changes and no minecart rendering changes.
                 if (CarriedModelProfile.isVanillaChest(stack)) {
-                    poses.rotateDegrees(Axis.YP, 180.0f);
+                    poses.rotateDegrees(Axis.YP, 270.0f);
                 }
 
                 // Fence and wall item models are edge-on with the normal cube
