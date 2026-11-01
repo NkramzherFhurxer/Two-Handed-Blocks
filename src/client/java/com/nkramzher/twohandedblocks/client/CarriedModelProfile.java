@@ -85,6 +85,33 @@ public final class CarriedModelProfile {
                 && id.getPath().endsWith("_door");
     }
 
+    /**
+     * Per-item yaw corrections for the user's two-handed first-person pose.
+     * The current model packs may already have their own display transforms;
+     * this rotation is additional to those transforms and only applies in F1.
+     */
+    public static float firstPersonExtraYawDegrees(ItemStack stack) {
+        if (stack.isEmpty()) return 0.0f;
+        Identifier id = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        if (id == null || !"minecraft".equals(id.getNamespace())) return 0.0f;
+        String name = id.getPath();
+        // All six vanilla minecart types, including the plain empty cart.
+        if (name.equals("minecart") || name.endsWith("_minecart")) return 180.0f;
+        // Building stairs, not ladders.
+        if (name.endsWith("_stairs")) return 180.0f;
+        if (name.equals("crafting_table")) return 180.0f;
+        if (name.equals("lectern")) return -90.0f; // turn to the left
+        return 0.0f;
+    }
+
+    /** Only the normal chest turns right in third person, not trapped/ender chests. */
+    public static float thirdPersonExtraYawDegrees(ItemStack stack) {
+        if (stack.isEmpty()) return 0.0f;
+        Identifier id = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        return id != null && "minecraft".equals(id.getNamespace())
+                && "chest".equals(id.getPath()) ? 90.0f : 0.0f;
+    }
+
     public static float rollDegrees(Shape profile) {
         return profile == Shape.BELL ? 17.0f : 0.0f;
     }
