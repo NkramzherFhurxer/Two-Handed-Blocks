@@ -64,6 +64,12 @@ public abstract class FirstPersonBlocksMixin {
         if (CarriedModelProfile.isVanillaDoor(stack)) {
             poses.rotateDegrees(Axis.YP, 90.0f);
         }
+        // Specific horizontal turns requested for held minecarts, building
+        // stairs, crafting tables and lecterns. First-person only.
+        float extraYaw = CarriedModelProfile.firstPersonExtraYawDegrees(stack);
+        if (extraYaw != 0.0f) {
+            poses.rotateDegrees(Axis.YP, extraYaw);
+        }
         if (CarriedModelProfile.rollDegrees(profile) != 0.0f) {
             poses.rotateDegrees(Axis.ZP, CarriedModelProfile.rollDegrees(profile));
         }
