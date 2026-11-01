@@ -66,6 +66,9 @@ public final class CarriedModelProfile {
             // Vanilla doors: dedicated third-person offset for the 3D door models.
             // Keep their 90-degree rotation and leave trapdoors/fence gates untouched.
             if (isVanillaDoor(stack)) return -0.140f;
+            // The chest's special item renderer shifts its visual centre after a
+            // quarter-turn. Give every vanilla chest the same F5 correction.
+            if (isVanillaChest(stack)) return 0.335f; // baseline 0.155f + 0.180f
             return switch (id.getPath()) {
                 // Example item-specific overrides (uncomment only if needed):
                 // case "chest" -> 0.155f;
@@ -102,6 +105,19 @@ public final class CarriedModelProfile {
         if (name.equals("crafting_table")) return 180.0f;
         if (name.equals("lectern")) return 90.0f; // 180 degrees from the previous -90-degree orientation
         return 0.0f;
+    }
+
+    /** All eleven vanilla chest items: normal, trapped, Ender, and eight copper variants. */
+    public static boolean isVanillaChest(ItemStack stack) {
+        if (stack.isEmpty()) return false;
+        Identifier id = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        if (id == null || !"minecraft".equals(id.getNamespace())) return false;
+        String name = id.getPath();
+        return name.equals("chest")
+                || name.equals("trapped_chest")
+                || name.equals("ender_chest")
+                || name.equals("copper_chest")
+                || name.endsWith("_copper_chest");
     }
 
     public static float rollDegrees(Shape profile) {

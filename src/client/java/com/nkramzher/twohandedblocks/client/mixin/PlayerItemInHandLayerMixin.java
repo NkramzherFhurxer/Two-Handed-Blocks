@@ -58,6 +58,13 @@ public abstract class PlayerItemInHandLayerMixin {
                     poses.rotateDegrees(Axis.YP, 90.0f);
                 }
 
+                // Rotate the eleven vanilla chests consistently in F5.
+                // Their separate offset in CarriedModelProfile compensates
+                // the leftward visual drift caused by this yaw.
+                if (CarriedModelProfile.isVanillaChest(stack)) {
+                    poses.rotateDegrees(Axis.YP, 90.0f);
+                }
+
                 // Fence and wall item models are edge-on with the normal cube
                 // orientation. Rotate only this family a quarter turn to show
                 // the horizontal connectors, as with a fence gate. The gate
