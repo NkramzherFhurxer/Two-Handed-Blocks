@@ -50,10 +50,11 @@ public abstract class PlayerItemInHandLayerMixin {
                 // through 180 degrees around the screen-facing Z axis BEFORE
                 // cancelling the hand-model pitch/yaw, keeping the front face
                 // flat while making the top point upward.
-                // Fine-tune the final few degrees of bed leveling in F5.
-                // Keep the tested horizontal position and all first-person poses.
+                // The last +10 degree tilt was in the wrong direction.
+                // Test 10 degrees opposite the earlier +32 baseline in F5.
+                // Keep centering, scale and all first-person poses untouched.
                 if (profile == CarriedModelProfile.Shape.BED) {
-                    poses.rotateDegrees(Axis.ZP, 42.0f);
+                    poses.rotateDegrees(Axis.ZP, 22.0f);
                 }
                 poses.rotateDegrees(Axis.ZP, 180.0f);
 
