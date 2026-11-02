@@ -50,12 +50,11 @@ public abstract class PlayerItemInHandLayerMixin {
                 // through 180 degrees around the screen-facing Z axis BEFORE
                 // cancelling the hand-model pitch/yaw, keeping the front face
                 // flat while making the top point upward.
-                // Keep the existing end-to-end leveling (Z = +52 degrees).
-                // Tilt the bed sideways along its visible length using X,
-                // instead of changing the height of its head/foot again.
-                // Experiment applies only to beds in third person.
+                // The +20 degree side tilt made the bed lean further forward.
+                // Reverse ONLY that lateral X tilt for the next F5 comparison.
+                // Preserve Z +52, offsets, scale, first person, and all other items.
                 if (profile == CarriedModelProfile.Shape.BED) {
-                    poses.rotateDegrees(Axis.XP, 20.0f);
+                    poses.rotateDegrees(Axis.XP, -20.0f);
                     poses.rotateDegrees(Axis.ZP, 52.0f);
                 }
                 poses.rotateDegrees(Axis.ZP, 180.0f);
