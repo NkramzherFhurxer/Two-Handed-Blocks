@@ -59,11 +59,12 @@ public abstract class FirstPersonBlocksMixin {
         // Different model shapes need different orientations. This does not
         // affect item rules and deliberately leaves fence gates untouched.
         CarriedModelProfile.Shape profile = CarriedModelProfile.shape(stack);
-        // Level the long bed model across both hands in first person. Rotate
-        // around the camera-facing Z axis BEFORE the shape-specific yaw.
-        // This is visual-only and affects the sixteen vanilla bed colours.
+        // The 160-degree bed yaw now puts the pillow on the correct side,
+        // but leaves it much higher than the foot of the bed. Counter-rotate
+        // in the first-person screen plane to lower that end toward the hands.
+        // Keep the bed's 160-degree Y turn and every third-person pose intact.
         if (profile == CarriedModelProfile.Shape.BED) {
-            poses.rotateDegrees(Axis.ZP, 32.0f);
+            poses.rotateDegrees(Axis.ZP, -24.0f);
         }
         poses.rotateDegrees(Axis.YP, CarriedModelProfile.yawDegrees(profile));
         // Turn only regular vanilla door items by +90° in first person.
