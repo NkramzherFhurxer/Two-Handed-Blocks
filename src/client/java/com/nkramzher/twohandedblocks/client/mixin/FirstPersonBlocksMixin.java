@@ -59,11 +59,13 @@ public abstract class FirstPersonBlocksMixin {
         // Different model shapes need different orientations. This does not
         // affect item rules and deliberately leaves fence gates untouched.
         CarriedModelProfile.Shape profile = CarriedModelProfile.shape(stack);
-        // The 160-degree bed yaw now puts the pillow on the correct side,
-        // but leaves it much higher than the foot of the bed. Counter-rotate
-        // in the first-person screen plane to lower that end toward the hands.
-        // Keep the bed's 160-degree Y turn and every third-person pose intact.
+        // Small first-person horizontal (camera-space Y) adjustment for beds:
+        // the pink foot stays at screen-left but moves closer to the player,
+        // while the white pillow stays at screen-right and moves farther away.
+        // Apply before the existing -24 Z leveling and bed item yaw: do not
+        // alter the approved level pose, scale, centering or third person view.
         if (profile == CarriedModelProfile.Shape.BED) {
+            poses.rotateDegrees(Axis.YP, 30.0f);
             poses.rotateDegrees(Axis.ZP, -24.0f);
         }
         poses.rotateDegrees(Axis.YP, CarriedModelProfile.yawDegrees(profile));
