@@ -66,9 +66,10 @@ public final class CarriedModelProfile {
             // Vanilla doors: dedicated third-person offset for the 3D door models.
             // Keep their 90-degree rotation and leave trapdoors/fence gates untouched.
             if (isVanillaDoor(stack)) return -0.140f;
-            // Bed-only F5 centering refinement after leveling the sixteen beds.
-            // Small screen-left adjustment; keep the approved +32 degree rotation.
-            if (shape(stack) == Shape.BED) return 0.215f; // default: 0.155f
+            // Bed-only F5 horizontal centering after leveling all sixteen beds.
+            // Screenshot comparison showed the last positive offset pushed the bed
+            // further screen-right, so move it back left while retaining +32°.
+            if (shape(stack) == Shape.BED) return 0.035f; // other blocks: 0.155f
             return switch (id.getPath()) {
                 // Example item-specific overrides (uncomment only if needed):
                 // case "chest" -> 0.155f;
