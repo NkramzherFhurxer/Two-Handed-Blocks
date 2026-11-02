@@ -50,11 +50,10 @@ public abstract class PlayerItemInHandLayerMixin {
                 // through 180 degrees around the screen-facing Z axis BEFORE
                 // cancelling the hand-model pitch/yaw, keeping the front face
                 // flat while making the top point upward.
-                // Keep all sixteen beds nearly horizontal across both arms in
-                // F5, rather than hanging almost vertically from one side.
-                // No size/translation changes; other items are untouched.
+                // Fine-tune the final few degrees of bed leveling in F5.
+                // Keep the tested horizontal position and all first-person poses.
                 if (profile == CarriedModelProfile.Shape.BED) {
-                    poses.rotateDegrees(Axis.ZP, 32.0f);
+                    poses.rotateDegrees(Axis.ZP, 42.0f);
                 }
                 poses.rotateDegrees(Axis.ZP, 180.0f);
 
