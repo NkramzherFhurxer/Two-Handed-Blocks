@@ -101,11 +101,11 @@ public final class CarriedModelProfile {
         String name = id.getPath();
         // All six vanilla minecart types, including the plain empty cart.
         if (name.equals("minecart") || name.endsWith("_minecart")) return 180.0f;
-        // Restore the last level first-person bed pose at 160 degrees, then
-        // rotate it a full 180 degrees horizontally to swap pillow and foot.
-        // Unlike the previous 90-degree change, this keeps the same plane.
-        // Do not change bed tilt, offsets, scale, or any third-person pose.
-        if (name.endsWith("_bed")) return 340.0f;
+        // Last visually stable first-person bed orientation (pillow on the
+        // player's right, mattress level). The attempted 180-degree yaw flip
+        // tilted the baked bed model badly; do not reapply it blindly.
+        // Future corrections must account for the baked item display transform.
+        if (name.endsWith("_bed")) return 160.0f;
         // Building stairs, not ladders.
         if (name.endsWith("_stairs")) return 180.0f;
         if (name.equals("crafting_table")) return 180.0f;
