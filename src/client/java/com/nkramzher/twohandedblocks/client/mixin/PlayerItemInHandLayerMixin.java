@@ -50,12 +50,13 @@ public abstract class PlayerItemInHandLayerMixin {
                 // through 180 degrees around the screen-facing Z axis BEFORE
                 // cancelling the hand-model pitch/yaw, keeping the front face
                 // flat while making the top point upward.
-                // The +20 degree side tilt made the bed lean further forward.
-                // Reverse ONLY that lateral X tilt for the next F5 comparison.
-                // Preserve Z +52, offsets, scale, first person, and all other items.
+                // Keep the successful sideways tilt (-20 X) and refine only
+                // the screen-plane angle: the character's left-hand side
+                // (screen-right in front-facing F5) was slightly too low.
+                // The center offset and first-person bed pose remain unchanged.
                 if (profile == CarriedModelProfile.Shape.BED) {
                     poses.rotateDegrees(Axis.XP, -20.0f);
-                    poses.rotateDegrees(Axis.ZP, 52.0f);
+                    poses.rotateDegrees(Axis.ZP, 43.0f);
                 }
                 poses.rotateDegrees(Axis.ZP, 180.0f);
 
