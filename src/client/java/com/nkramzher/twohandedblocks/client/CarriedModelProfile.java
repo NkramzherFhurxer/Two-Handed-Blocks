@@ -101,10 +101,11 @@ public final class CarriedModelProfile {
         String name = id.getPath();
         // All six vanilla minecart types, including the plain empty cart.
         if (name.equals("minecart") || name.endsWith("_minecart")) return 180.0f;
-        // Bed-only first-person yaw: reverse which end is nearer the camera,
-        // using a little less than a full 180-degree turn for visual calibration.
-        // This leaves all third-person bed angles and offsets unchanged.
-        if (name.endsWith("_bed")) return 160.0f;
+        // First-person beds: face the pink foot toward the player's forward
+        // direction and keep the white pillow toward the camera. A quarter
+        // turn from the previous 160-degree yaw, without changing bed leveling.
+        // All sixteen bed colours share this rule; F5 remains untouched.
+        if (name.endsWith("_bed")) return 70.0f;
         // Building stairs, not ladders.
         if (name.endsWith("_stairs")) return 180.0f;
         if (name.equals("crafting_table")) return 180.0f;
