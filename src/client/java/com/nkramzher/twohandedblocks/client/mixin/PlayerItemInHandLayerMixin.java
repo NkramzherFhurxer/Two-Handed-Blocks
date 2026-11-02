@@ -50,6 +50,12 @@ public abstract class PlayerItemInHandLayerMixin {
                 // through 180 degrees around the screen-facing Z axis BEFORE
                 // cancelling the hand-model pitch/yaw, keeping the front face
                 // flat while making the top point upward.
+                // Beds have a long diagonal silhouette in F5. Use a bed-only
+                // screen-plane correction while preserving the original Z flip
+                // and all other block, door, chest, boat and minecart transforms.
+                if (profile == CarriedModelProfile.Shape.BED) {
+                    poses.rotateDegrees(Axis.ZP, -38.0f);
+                }
                 poses.rotateDegrees(Axis.ZP, 180.0f);
 
                 // Turn only regular vanilla doors by +90° in third person.
