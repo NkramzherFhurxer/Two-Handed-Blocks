@@ -59,14 +59,11 @@ public abstract class PlayerItemInHandLayerMixin {
                     poses.rotateDegrees(Axis.XP, -20.0f);
                     poses.rotateDegrees(Axis.ZP, 43.0f);
                 }
-                // Cake is much flatter than a full cube and its default F5
-                // display transform makes it look like a diagonal slab against
-                // the player's torso. Lay it toward a horizontal tray between
-                // the arms, without affecting first person or any other item.
-                // Second visual test: raise the cake's lowered front edge.
+                // Cake: preserve the successful -50 degree pitch (white icing
+                // is visible), and try a small screen-plane roll to level the
+                // diagonal between the two hands. Third-person only.
                 if (stack.is(Items.CAKE)) {
-                    // Lift the lowered front edge by easing the cake-only pitch.
-                    // F5 only; first-person transforms and other items unchanged.
+                    poses.rotateDegrees(Axis.ZP, 25.0f);
                     poses.rotateDegrees(Axis.XP, -50.0f);
                 }
                 poses.rotateDegrees(Axis.ZP, 180.0f);
