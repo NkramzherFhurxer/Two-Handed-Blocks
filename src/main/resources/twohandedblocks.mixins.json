@@ -3,7 +3,8 @@
   "package": "com.nkramzher.twohandedblocks.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
-    "PlayerSwimmingMixin"
+    "PlayerSwimmingMixin",
+    "EntitySprintMixin"
   ],
   "injectors": {
     "defaultRequire": 1

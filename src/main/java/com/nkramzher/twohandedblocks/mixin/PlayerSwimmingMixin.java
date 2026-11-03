@@ -21,6 +21,9 @@ public abstract class PlayerSwimmingMixin {
     private void twohandedblocks$preventSwimmingWithFullHands(CallbackInfo ci) {
         Player player = (Player) (Object) this;
         if (player.isInWater() && BlockRules.isCarrying(player)) {
+            // Sprint and swimming are separate flags. Stop both; otherwise
+            // Ctrl or double-tap forward can still speed up underwater travel.
+            player.setSprinting(false);
             player.setSwimming(false);
             ci.cancel();
         }
