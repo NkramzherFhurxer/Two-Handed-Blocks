@@ -63,9 +63,11 @@ public abstract class PlayerItemInHandLayerMixin {
                 // display transform makes it look like a diagonal slab against
                 // the player's torso. Lay it toward a horizontal tray between
                 // the arms, without affecting first person or any other item.
-                // First visual test: refine the pitch after screenshots.
+                // Second visual test: raise the cake's lowered front edge.
                 if (stack.is(Items.CAKE)) {
-                    poses.rotateDegrees(Axis.XP, -70.0f);
+                    // Lift the lowered front edge by easing the cake-only pitch.
+                    // F5 only; first-person transforms and other items unchanged.
+                    poses.rotateDegrees(Axis.XP, -50.0f);
                 }
                 poses.rotateDegrees(Axis.ZP, 180.0f);
 
