@@ -5,7 +5,9 @@
   "client": [
     "PlayerModelMixin",
     "PlayerItemInHandLayerMixin",
-    "FirstPersonBlocksMixin"
+    "FirstPersonBlocksMixin",
+    "KeyboardInputMountMixin",
+    "BoatControlMixin"
   ],
   "injectors": {
     "defaultRequire": 1
