@@ -262,3 +262,17 @@ vanilla and may need further adjustment.
 - This calibration requires actual in-game F1/F5 screenshots. If the pot is
   still tilted or the arms miss its sides, adjust only the pot parameters.
 - The v26 pack and Hotfix 13 are valid previous backups.
+
+## Alpha 4 Hotfix 15 — pot grip follow-up
+
+- User testing of Hotfix 14: decorated pot **still gripped at its corners in F1**.
+  In F5, the pot stood vertically but was upside-down.
+- In F1 only, for `minecraft:decorated_pot`, hands move closer to the pot's
+  sides (0.37 to 0.30), higher (-0.03 to 0.10) and angle inward slightly less
+  (32° to 28°). Every other block's pose remains identical.
+- F5 pot correction lives **only** in Block-Accurate v28 (separate ZIP):
+  change model third-person rotation [75,45,180] to [75,45,0], removing
+  the extra Z half-turn that appeared to invert the pot.
+- Prior working Hotfix 12 hand precedence and orientation normalization remain
+  unchanged. Both modifications are visual experiments requiring gameplay
+  screenshots, not guaranteed final alignments.
