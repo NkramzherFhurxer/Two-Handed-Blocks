@@ -1,6 +1,7 @@
 package com.nkramzher.twohandedblocks;
 
 import java.util.Set;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
@@ -111,7 +112,29 @@ public final class BlockRules {
         return !oneHand(path);
     }
 
+    /**
+     * The main hand wins when both hands hold two-handed blocks. Otherwise,
+     * a two-handed block in the off hand wins over any one-handed main item.
+     * Nothing is moved between the actual inventory slots.
+     */
+    public static InteractionHand carriedHand(ItemStack mainHand, ItemStack offHand) {
+        if (isCarriedBlock(mainHand)) return InteractionHand.MAIN_HAND;
+        if (isCarriedBlock(offHand)) return InteractionHand.OFF_HAND;
+        return null;
+    }
+
+    public static InteractionHand carriedHand(Player player) {
+        if (player == null || player.isSpectator()) return null;
+        return carriedHand(player.getMainHandItem(), player.getOffhandItem());
+    }
+
     public static boolean isCarrying(Player player) {
-        return player != null && !player.isSpectator() && isCarriedBlock(player.getMainHandItem());
+        return carriedHand(player) != null;
+    }
+
+    /** True if the player is carrying a two-handed block in the OTHER hand. */
+    public static boolean isInactiveHand(Player player, InteractionHand attempted) {
+        InteractionHand carrying = carriedHand(player);
+        return carrying != null && attempted != carrying;
     }
 }
