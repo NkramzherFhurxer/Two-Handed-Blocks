@@ -143,3 +143,23 @@ This is an **experimental classification**, not a complete catalog of all Minecr
   one-handed exceptions.
 - Static validation done; full Gradle build with Java 25 and in-game test
   remain to be checked in GitHub Actions.
+
+## Alpha 4 Hotfix 8 — offhand carrying priority (experimental)
+
+- Priority: main-hand two-handed block > offhand two-handed block > normal one-handed gameplay.
+- An offhand block activates the two-arm pose and the same restrictions on attacks, breaking,
+  sprint-swimming and steering boats, minecarts, horses and nautiluses.
+- Only the selected carrying hand can place/use its item. The other hand stays in inventory
+  but is visually suppressed in first- and third-person.
+- On right-click, the client skips the inactive hand rather than letting the main-hand item
+  (for example, a torch) consume the action before the offhand block.
+- If both hands hold two-handed blocks, the main-hand block is displayed/used.
+- Single-hand gameplay retains vanilla order and behavior.
+- No changes to texture packs or per-block display transforms.
+- Passive offhand effects such as a totem are not disabled.
+
+**Test in game:** try (1) sword + offhand stone, (2) torch + offhand chest,
+(3) main-hand stone + offhand diamond block, (4) swapping hands with F,
+(5) placing against chests/doors, (6) F1/F5 with left-handed settings,
+(7) attacks/swimming/riding with offhand-only carried blocks.
+The new right-click interception is experimental and needs real gameplay testing.
