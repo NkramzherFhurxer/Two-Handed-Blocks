@@ -28,7 +28,7 @@ public final class BlockRules {
             // Keep the dragon head in the same family for consistent handling.
             "dragon_head", "skeleton_skull", "wither_skeleton_skull", "zombie_head",
             "creeper_head", "piglin_head", "player_head",
-            "light", "barrier", "structure_void",
+            "light", "barrier", "structure_void", "dried_ghast",
             "torch", "soul_torch", "redstone_torch", "lantern", "soul_lantern",
             "lever", "tripwire_hook", "lightning_rod", "ladder", "chain", "iron_chain", "flower_pot", "iron_bars", "glass_pane", "red_shrub", "shelf_mushroom",
             "repeater", "comparator", "daylight_detector", "redstone_wire",
@@ -75,6 +75,10 @@ public final class BlockRules {
                 || path.endsWith("_trapdoor")
                 || path.endsWith("_shelf")
                 || path.endsWith("_stained_glass_pane")
+                // All 8 copper-bar variants: normal, exposed, weathered,
+                // oxidized, and each of their waxed counterparts.
+                || path.equals("copper_bars")
+                || path.endsWith("_copper_bars")
                 || path.endsWith("_shelf_fungus")
                 || path.endsWith("_mushroom")
                 || path.endsWith("_petals")
