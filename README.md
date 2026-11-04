@@ -191,3 +191,17 @@ The new right-click interception is experimental and needs real gameplay testing
 between primary and offhand while observing F1/F5 (including player left-handed
 setting). Their model orientation/position should match; no right-click,
 mining, swimming, or mounting regressions.
+
+## Alpha 4 Hotfix 11 — F1 cached offhand render state
+
+- Hotfix 10 worked in F5 but the original first-person offhand models did not
+  reliably match the main-hand orientation.
+- First-person rendering may use a cached/copy of the player's offhand item.
+  The former object-identity check was too strict. F1 now matches both item
+  and components (not object identity) before applying the main-hand model
+  display context.
+- The successful F5 logic, model transforms, poses, handling mechanics,
+  and resource packs remain untouched.
+- Test F1 offhand bell, bed, chest, boat, minecart, etc. beside the same item
+  held in the primary hand; verify F5 is unchanged. This is a candidate fix,
+  pending screenshots from actual gameplay.
