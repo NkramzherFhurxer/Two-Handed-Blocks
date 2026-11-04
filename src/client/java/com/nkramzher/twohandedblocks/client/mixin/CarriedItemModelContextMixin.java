@@ -31,8 +31,20 @@ public abstract class CarriedItemModelContextMixin {
             ItemStackRenderState output, ItemStack item, ItemDisplayContext context,
             LivingEntity entity, CallbackInfo ci) {
         if (!(entity instanceof Player player)
-                || BlockRules.carriedHand(player) != InteractionHand.OFF_HAND
-                || item != player.getOffhandItem()) {
+                || BlockRules.carriedHand(player) != InteractionHand.OFF_HAND) {
+            return;
+        }
+
+        // FirstPersonHandsAndItems can render a cached/copy of the offhand
+        // ItemStack, not the same Java object stored in the inventory.
+        // Reference comparison alone worked for F5 but skipped F1.
+        // Accept matching item + data components in F1 only. Keep the
+        // already-tested F5 path using the original exact reference.
+        boolean firstPerson = context == ItemDisplayContext.FIRST_PERSON_LEFT_HAND
+                || context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND;
+        if (item != player.getOffhandItem()
+                && !(firstPerson && ItemStack.isSameItemSameComponents(
+                        item, player.getOffhandItem()))) {
             return;
         }
 
