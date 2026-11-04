@@ -68,6 +68,15 @@ public abstract class FirstPersonBlocksMixin {
             }
         }
         poses.pushPose();
+        // Only the bell held in the offhand needs independent alignment.
+        // Keep every main-hand calibration and every other offhand item intact.
+        boolean offhandBell = carrying == InteractionHand.OFF_HAND
+                && CarriedModelProfile.shape(stack) == CarriedModelProfile.Shape.BELL;
+        if (offhandBell) {
+            poses.translate(0.12f, 0.0f, 0.0f);
+            // Counter the offhand-specific tilt of the bell's baked item view.
+            poses.rotateDegrees(Axis.ZP, 12.0f);
+        }
         poses.translate(0.0f, -0.24f, -0.83f);
         // Different model shapes need different orientations. This does not
         // affect item rules and deliberately leaves fence gates untouched.
