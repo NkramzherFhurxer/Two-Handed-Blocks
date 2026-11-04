@@ -3,7 +3,7 @@
   "id": "twohandedblocks",
   "version": "${version}",
   "name": "Two-Handed Blocks",
-  "description": "Hold selected inventory blocks with both hands; first- and third-person animations and temporarily blocked off-hand use. Prototype build.",
+  "description": "Hold blocks from either hand with both hands; priority-based first- and third-person poses, placement, and interaction restrictions.",
   "authors": [
     "NkramzherFhurxer"
   ],
