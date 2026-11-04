@@ -41,16 +41,10 @@ public abstract class PlayerItemInHandLayerMixin {
             // Preserve the proven fence / wall alignment rather than applying
             // one universal X offset to every model.
             CarriedModelProfile.Shape profile = CarriedModelProfile.shape(stack);
-            boolean offhandBell = carrying == InteractionHand.OFF_HAND
-                    && profile == CarriedModelProfile.Shape.BELL;
-            float horizontalOffset = offhandBell
-                    ? 0.16f : CarriedModelProfile.thirdPersonHorizontalOffset(stack);
-            poses.translate(horizontalOffset, 0.40f, -0.53f);
-            if (offhandBell) {
-                // In F5 the offhand bell lies sideways. Rotate its entire pose
-                // in screen-plane while preserving the main-hand bell settings.
-                poses.rotateDegrees(Axis.ZP, 90.0f);
-            }
+            // Offhand two-handed models now use the same main-hand model
+            // context, so all carried blocks share these exact F5 offsets.
+            poses.translate(CarriedModelProfile.thirdPersonHorizontalOffset(stack),
+                    0.40f, -0.53f);
             if (profile == CarriedModelProfile.Shape.BELL) {
                 // The bell has a special item model: keep the last tested pose
                 // until we deliberately revisit its geometry.
