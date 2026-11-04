@@ -205,3 +205,25 @@ mining, swimming, or mounting regressions.
 - Test F1 offhand bell, bed, chest, boat, minecart, etc. beside the same item
   held in the primary hand; verify F5 is unchanged. This is a candidate fix,
   pending screenshots from actual gameplay.
+
+## Alpha 4 Hotfix 12 — direct first-person state correction (experimental)
+
+**Hotfix 11 in-game result:** no change in F1; F5 continued to work.
+
+- First-person and third-person build their render states along different paths.
+  Our old `ItemModelResolver.updateForLiving` injection did not normalize
+  the first-person model in actual gameplay.
+- Now directly rebuild `state.offHandRenderState` at the start of
+  `FirstPersonHandsAndItemsRenderer.submitHandsWithItems`, using the cached
+  F1 item and the player's primary-hand `ItemDisplayContext`.
+- The former shared resolver mixin was narrowed to the unchanged, confirmed
+  working F5 path only. F1 doesn't depend on its ItemStack identity any more.
+- The exact same `FirstPersonBlocksMixin` arm position, model rotations and
+  scale are reused once the F1 render state is normalized.
+- No changes to texturepack files, item priority, block rules, gameplay controls
+  or the validated third-person pose.
+
+**Verify in-game** by putting a bell in the main hand, taking an F1 screenshot,
+then swapping it to the offhand and taking another. Repeat with a bed and a
+minecart. F5 must remain unchanged. A successful compile does not guarantee
+visual equivalence.
