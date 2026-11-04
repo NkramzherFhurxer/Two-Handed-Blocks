@@ -7,7 +7,6 @@ import net.fabricmc.fabric.api.event.player.BlockEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,13 +25,15 @@ public final class TwoHandedBlocks implements ModInitializer {
         AttackEntityCallback.EVENT.register((player, level, hand, entity, hit) ->
                 BlockRules.isCarrying(player) ? InteractionResult.FAIL : InteractionResult.PASS);
 
-        // Cancel active off-hand interactions while the selected MAIN-hand item is a block.
-        // Note: passive off-hand effects (e.g. a totem) are not cancelled in this preview.
+        // Only the carrying hand is allowed to use items and place blocks.
+        // Main block > offhand block > normal vanilla behavior. The client
+        // also selects the carrying hand before asking vanilla to use an item.
+        // Passive effects such as an equipped totem remain vanilla behavior.
         UseBlockCallback.EVENT.register((player, level, hand, hit) ->
-                hand == InteractionHand.OFF_HAND && BlockRules.isCarrying(player)
+                BlockRules.isInactiveHand(player, hand)
                         ? InteractionResult.FAIL : InteractionResult.PASS);
         UseItemCallback.EVENT.register((player, level, hand) ->
-                hand == InteractionHand.OFF_HAND && BlockRules.isCarrying(player)
+                BlockRules.isInactiveHand(player, hand)
                         ? InteractionResult.FAIL : InteractionResult.PASS);
         // Skip the block's empty-hand behavior (open chest, door, crafting table,
         // button, etc.) but keep the held BlockItem's normal placement phase.
@@ -47,6 +48,6 @@ public final class TwoHandedBlocks implements ModInitializer {
         UseEntityCallback.EVENT.register((player, level, hand, entity, hit) ->
                 BlockRules.isCarrying(player) ? InteractionResult.FAIL : InteractionResult.PASS);
 
-        LOGGER.info("Two-Handed Blocks 0.2.0 alpha3 small-block exceptions initialized");
+        LOGGER.info("Two-Handed Blocks two-hand carrier priority initialized");
     }
 }
