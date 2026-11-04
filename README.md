@@ -163,3 +163,12 @@ This is an **experimental classification**, not a complete catalog of all Minecr
 (5) placing against chests/doors, (6) F1/F5 with left-handed settings,
 (7) attacks/swimming/riding with offhand-only carried blocks.
 The new right-click interception is experimental and needs real gameplay testing.
+
+## Alpha 4 Hotfix 9 — offhand bell alignment (visual test)
+
+- First-person: shift the offhand bell slightly right and counter-rotate the tilt.
+- Third-person: mirror its bell-only torso offset and quarter-turn the sideways item pose.
+- Main-hand bell and all other block positions/transforms unchanged.
+- Block-Accurate v23 remains unchanged. No resource pack edits.
+- This is a first visual calibration. Compare F1/F5 offhand screenshots in-game
+  before treating the angles as final.
