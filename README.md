@@ -172,3 +172,22 @@ The new right-click interception is experimental and needs real gameplay testing
 - Block-Accurate v23 remains unchanged. No resource pack edits.
 - This is a first visual calibration. Compare F1/F5 offhand screenshots in-game
   before treating the angles as final.
+
+## Alpha 4 Hotfix 10 — shared model orientation for either carrying hand
+
+- When the offhand carries the selected two-handed block, its baked item model
+  uses the same first-person and third-person display context as the main hand.
+- Right-handed players use the RIGHT-hand item context as the reference.
+  Left-handed players use their LEFT-hand item context.
+- Removes the experimental bell-only offhand F1/F5 offsets from Hotfix 9.
+  The existing main-hand offsets, yaw/roll, and animations are unchanged.
+- Affects two-handed offhand blocks only, not ordinary one-handed items,
+  GUI previews, dropped items, or placed blocks.
+- Does not modify the resource pack; Block-Accurate v25 stays intact.
+- This normalizes model transforms, not inventory/interaction priority, which
+  continues to follow the previously established main > offhand rule.
+
+**Test:** switch the same bed, bell, chest, boat, minecart and ordinary block
+between primary and offhand while observing F1/F5 (including player left-handed
+setting). Their model orientation/position should match; no right-click,
+mining, swimming, or mounting regressions.
