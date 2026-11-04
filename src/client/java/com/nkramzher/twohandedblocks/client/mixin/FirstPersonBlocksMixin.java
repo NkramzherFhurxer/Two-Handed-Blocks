@@ -7,6 +7,7 @@ import com.nkramzher.twohandedblocks.client.CarriedModelProfile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.FirstPersonHandsAndItemsRenderer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.client.renderer.state.level.FirstPersonHandsAndItemsRenderState;
 import net.minecraft.client.renderer.state.level.PlayerRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -34,9 +35,30 @@ public abstract class FirstPersonBlocksMixin {
     private void twohandedblocks$showCarriedHand(float partialTicks, PoseStack poses,
             SubmitNodeCollector nodes, PlayerRenderState playerState,
             FirstPersonHandsAndItemsRenderState state, CallbackInfo ci) {
-        if (BlockRules.isCarrying(Minecraft.getInstance().player)) {
+        var player = Minecraft.getInstance().player;
+        if (BlockRules.isCarrying(player)) {
             state.handRenderSelection =
                     FirstPersonHandsAndItemsRenderState.HandRenderSelection.RENDER_BOTH_HANDS;
+        }
+
+        // F1 is extracted separately by FirstPersonHandsAndItems, which
+        // resolves its own ItemStackRenderState before this renderer runs.
+        // Unlike F5 this path need not call ItemModelResolver.updateForLiving.
+        // Replace ONLY the offhand display state with the primary-hand
+        // context here, using the exact cached stack actually drawn in F1.
+        // F5 uses a different render state and is completely unaffected.
+        if (player != null && BlockRules.carriedHand(player) == InteractionHand.OFF_HAND
+                && BlockRules.isCarriedBlock(state.offHandItem)) {
+            ItemDisplayContext context = player.getMainArm() == HumanoidArm.RIGHT
+                    ? ItemDisplayContext.FIRST_PERSON_RIGHT_HAND
+                    : ItemDisplayContext.FIRST_PERSON_LEFT_HAND;
+            Minecraft.getInstance().getItemModelResolver().updateForTopItem(
+                    state.offHandRenderState,
+                    state.offHandItem,
+                    context,
+                    player.level(),
+                    player,
+                    player.getId() + context.ordinal());
         }
     }
 
