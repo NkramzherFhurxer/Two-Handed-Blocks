@@ -5,6 +5,7 @@
   "client": [
     "PlayerModelMixin",
     "PlayerItemInHandLayerMixin",
+    "MinecraftHandPriorityMixin",
     "FirstPersonBlocksMixin",
     "KeyboardInputMountMixin",
     "BoatControlMixin"
