@@ -76,14 +76,18 @@ public abstract class FirstPersonBlocksMixin {
         if (!BlockRules.isCarriedBlock(stack) || state.isScoping || playerState.avatarRenderState == null) return;
 
         poses.pushPose();
+        // A decorated pot is tall and narrower than a full cube. Its upper
+        // corners are grabbed by the standard two-handed arm pose; make only
+        // this item's hands lower and a little closer to the sides in F1.
+        boolean decoratedPot = CarriedModelProfile.isDecoratedPot(stack);
         if (!playerState.avatarRenderState.isInvisible) {
             // First-person arms behind the block, in a symmetrical holding pose.
             for (HumanoidArm arm : HumanoidArm.values()) {
                 poses.pushPose();
                 float side = arm == HumanoidArm.RIGHT ? 1.0f : -1.0f;
-                // Bring the hands slightly higher and in toward the block sides,
-                // instead of making them look like supports underneath it.
-                poses.translate(-side * 0.43f, 0.09f, -0.02f);
+                float sideOffset = decoratedPot ? 0.37f : 0.43f;
+                float verticalOffset = decoratedPot ? -0.03f : 0.09f;
+                poses.translate(-side * sideOffset, verticalOffset, -0.02f);
                 poses.rotateDegrees(Axis.YP, side * 32.0f);
                 this.renderPlayerArm(poses, nodes, light, inverseHeight, 0.0f, arm, playerState);
                 poses.popPose();
