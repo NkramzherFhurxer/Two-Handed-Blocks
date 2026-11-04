@@ -32,6 +32,8 @@ public final class BlockRules {
             "lever", "tripwire_hook", "lightning_rod", "ladder", "chain", "iron_chain", "flower_pot", "iron_bars", "glass_pane", "red_shrub", "shelf_mushroom",
             "repeater", "comparator", "daylight_detector", "redstone_wire",
             "redstone", "lily_pad", "snow", "sea_pickle", "cobweb",
+            // Single-hand visuals: their 3D resource-pack models do not require two-hand carrying.
+            "cake", "candle",
             "vine", "glow_lichen", "hanging_roots", "short_grass", "fern",
             "dead_bush", "bush", "firefly_bush", "leaf_litter", "wildflowers",
             "pink_petals", "dry_grass", "tall_dry_grass", "dandelion", "golden_dandelion", "poppy",

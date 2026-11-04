@@ -11,7 +11,6 @@ import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -58,13 +57,6 @@ public abstract class PlayerItemInHandLayerMixin {
                 if (profile == CarriedModelProfile.Shape.BED) {
                     poses.rotateDegrees(Axis.XP, -20.0f);
                     poses.rotateDegrees(Axis.ZP, 43.0f);
-                }
-                // Cake: preserve the successful -50 degree pitch (white icing
-                // is visible), and try a small screen-plane roll to level the
-                // diagonal between the two hands. Third-person only.
-                if (stack.is(Items.CAKE)) {
-                    poses.rotateDegrees(Axis.ZP, 25.0f);
-                    poses.rotateDegrees(Axis.XP, -50.0f);
                 }
                 poses.rotateDegrees(Axis.ZP, 180.0f);
 
