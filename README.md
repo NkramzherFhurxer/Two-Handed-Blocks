@@ -247,3 +247,18 @@ crafter/observer in F1 and F5, decorated pot while carrying in first and third
 person, and offhand priority in both views. Test the decorated pot texture pack
 with no other pack overriding its files; its baseline visual transforms are
 vanilla and may need further adjustment.
+
+## Alpha 4 Hotfix 14 — decorated pot F1 grip (experimental)
+
+- No change to the already proven two-hand priority and F1/F5 offhand matching.
+- Only when carrying `minecraft:decorated_pot`, bring the arms 0.06 closer to
+  the object's sides and lower their pose by 0.12 in first-person so the
+  player no longer appears to grip its upper corners.
+- All other blocks and vehicles retain their existing poses exactly.
+- Third-person pot orientation is addressed **only** in companion resource
+  pack Block-Accurate v27: special item model retained and
+  `thirdperson_righthand.rotation` experimentally calibrated from
+  `[0,90,0]` to `[75,45,180]`. No other model transforms were changed.
+- This calibration requires actual in-game F1/F5 screenshots. If the pot is
+  still tilted or the arms miss its sides, adjust only the pot parameters.
+- The v26 pack and Hotfix 13 are valid previous backups.
