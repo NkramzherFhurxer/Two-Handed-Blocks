@@ -116,6 +116,14 @@ public final class CarriedModelProfile {
         return 0.0f;
     }
 
+    /** The decorated pot needs a small F1 arm-grip adjustment, not a new generic pose. */
+    public static boolean isDecoratedPot(ItemStack stack) {
+        if (stack.isEmpty()) return false;
+        Identifier id = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        return id != null && "minecraft".equals(id.getNamespace())
+                && "decorated_pot".equals(id.getPath());
+    }
+
     /** All eleven vanilla chest items: normal, trapped, Ender, and eight copper variants. */
     public static boolean isVanillaChest(ItemStack stack) {
         if (stack.isEmpty()) return false;
