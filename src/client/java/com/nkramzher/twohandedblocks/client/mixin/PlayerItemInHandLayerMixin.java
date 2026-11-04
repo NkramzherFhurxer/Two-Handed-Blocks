@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.entity.layers.PlayerItemInHandLayer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -23,11 +24,16 @@ public abstract class PlayerItemInHandLayerMixin {
     private void twohandedblocks$submitBlock(AvatarRenderState state, ItemStackRenderState item,
             ItemStack stack, HumanoidArm arm, PoseStack poses, SubmitNodeCollector nodes,
             int light, CallbackInfo ci) {
-        ItemStack selected = state.mainArm == HumanoidArm.RIGHT
+        ItemStack main = state.mainArm == HumanoidArm.RIGHT
                 ? state.rightHandItemStack : state.leftHandItemStack;
-        if (state.isSpectator || !BlockRules.isCarriedBlock(selected)) return;
+        ItemStack offhand = state.mainArm == HumanoidArm.RIGHT
+                ? state.leftHandItemStack : state.rightHandItemStack;
+        InteractionHand carrying = BlockRules.carriedHand(main, offhand);
+        if (state.isSpectator || carrying == null) return;
+        HumanoidArm carryingArm = carrying == InteractionHand.MAIN_HAND
+                ? state.mainArm : state.mainArm.getOpposite();
 
-        if (arm == state.mainArm) {
+        if (arm == carryingArm) {
             poses.pushPose();
             // Model coordinates are +Y down. Center the carried item between
             // both arms. The model's baked third-person pivot is different for
