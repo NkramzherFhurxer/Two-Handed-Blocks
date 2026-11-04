@@ -15,7 +15,7 @@ public final class BlockRules {
 
     // Explicit two-handed overrides always win, even if a naming pattern changes.
     private static final Set<String> TWO_HANDS = Set.of(
-            "cactus", "nether_brick_fence", "tinted_glass",
+            "cake", "cactus", "nether_brick_fence", "tinted_glass",
             "mossy_cobblestone_wall", "cobblestone_wall", "bamboo_block", "stripped_bamboo_block",
             "big_dripleaf", "small_dripleaf", "tall_seagrass",
             "rose_bush", "peony"
@@ -33,7 +33,7 @@ public final class BlockRules {
             "repeater", "comparator", "daylight_detector", "redstone_wire",
             "redstone", "lily_pad", "snow", "sea_pickle", "cobweb",
             // Single-hand visuals: their 3D resource-pack models do not require two-hand carrying.
-            "cake", "candle",
+            "candle",
             "vine", "glow_lichen", "hanging_roots", "short_grass", "fern",
             "dead_bush", "bush", "firefly_bush", "leaf_litter", "wildflowers",
             "pink_petals", "dry_grass", "tall_dry_grass", "dandelion", "golden_dandelion", "poppy",
