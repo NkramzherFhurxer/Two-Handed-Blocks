@@ -15,9 +15,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Both hands share the selected MAIN-hand model orientation when a two-handed
- * block is held in the offhand. This changes only the baked model display
- * context, not the item, slot, arm movement, collision or placement rules.
+ * Third-person offhand two-handed blocks share the selected MAIN-hand model
+ * orientation. First-person models are resolved separately when F1 renders.
+ * This changes no inventory, movement, collision or placement rules.
  *
  * The original item transforms and model overrides (including resource packs)
  * are applied as though the block were rendered from the player's primary hand.
@@ -30,30 +30,18 @@ public abstract class CarriedItemModelContextMixin {
     private void twohandedblocks$useMainHandModelForOffhandBlock(
             ItemStackRenderState output, ItemStack item, ItemDisplayContext context,
             LivingEntity entity, CallbackInfo ci) {
+        // Third-person was confirmed working in Hotfix 10: keep its original
+        // exact-stack matching behavior, and do not handle first-person here.
+        // The first-person path is normalized directly in
+        // FirstPersonBlocksMixin, after its independent state extraction.
         if (!(entity instanceof Player player)
-                || BlockRules.carriedHand(player) != InteractionHand.OFF_HAND) {
-            return;
-        }
-
-        // FirstPersonHandsAndItems can render a cached/copy of the offhand
-        // ItemStack, not the same Java object stored in the inventory.
-        // Reference comparison alone worked for F5 but skipped F1.
-        // Accept matching item + data components in F1 only. Keep the
-        // already-tested F5 path using the original exact reference.
-        boolean firstPerson = context == ItemDisplayContext.FIRST_PERSON_LEFT_HAND
-                || context == ItemDisplayContext.FIRST_PERSON_RIGHT_HAND;
-        if (item != player.getOffhandItem()
-                && !(firstPerson && ItemStack.isSameItemSameComponents(
-                        item, player.getOffhandItem()))) {
+                || BlockRules.carriedHand(player) != InteractionHand.OFF_HAND
+                || item != player.getOffhandItem()) {
             return;
         }
 
         HumanoidArm mainArm = player.getMainArm();
         ItemDisplayContext reference = switch (context) {
-            case FIRST_PERSON_LEFT_HAND ->
-                    mainArm == HumanoidArm.RIGHT ? ItemDisplayContext.FIRST_PERSON_RIGHT_HAND : null;
-            case FIRST_PERSON_RIGHT_HAND ->
-                    mainArm == HumanoidArm.LEFT ? ItemDisplayContext.FIRST_PERSON_LEFT_HAND : null;
             case THIRD_PERSON_LEFT_HAND ->
                     mainArm == HumanoidArm.RIGHT ? ItemDisplayContext.THIRD_PERSON_RIGHT_HAND : null;
             case THIRD_PERSON_RIGHT_HAND ->
