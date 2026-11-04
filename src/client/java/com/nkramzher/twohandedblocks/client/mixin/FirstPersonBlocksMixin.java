@@ -28,14 +28,27 @@ public abstract class FirstPersonBlocksMixin {
         throw new AssertionError("Mixin shadow was not applied");
     }
 
+    // Always submit the selected carrying hand even if a main-hand item would
+    // normally suppress offhand rendering (e.g. vanilla bow/map poses).
+    @Inject(method = "submitHandsWithItems", at = @At("HEAD"))
+    private void twohandedblocks$showCarriedHand(float partialTicks, PoseStack poses,
+            SubmitNodeCollector nodes, PlayerRenderState playerState,
+            FirstPersonHandsAndItemsRenderState state, CallbackInfo ci) {
+        if (BlockRules.isCarrying(Minecraft.getInstance().player)) {
+            state.handRenderSelection =
+                    FirstPersonHandsAndItemsRenderState.HandRenderSelection.RENDER_BOTH_HANDS;
+        }
+    }
+
     @Inject(method = "submitArmWithItem", at = @At("HEAD"), cancellable = true)
     private void twohandedblocks$renderBlock(PlayerRenderState playerState,
             FirstPersonHandsAndItemsRenderState state, float partialTicks, float xRot,
             InteractionHand hand, float attack, ItemStack stack, float inverseHeight,
             PoseStack poses, SubmitNodeCollector nodes, int light, CallbackInfo ci) {
-        if (!BlockRules.isCarrying(Minecraft.getInstance().player)) return;
-        if (hand == InteractionHand.OFF_HAND) {
-            ci.cancel(); // hide the occupied secondary hand
+        InteractionHand carrying = BlockRules.carriedHand(Minecraft.getInstance().player);
+        if (carrying == null) return;
+        if (hand != carrying) {
+            ci.cancel(); // Hide whichever item is not holding the two-hand block.
             return;
         }
         if (!BlockRules.isCarriedBlock(stack) || state.isScoping || playerState.avatarRenderState == null) return;
@@ -83,7 +96,11 @@ public abstract class FirstPersonBlocksMixin {
             poses.rotateDegrees(Axis.ZP, CarriedModelProfile.rollDegrees(profile));
         }
         poses.scale(0.90f, 0.90f, 0.90f);
-        state.mainHandRenderState.submit(poses, nodes, light, OverlayTexture.NO_OVERLAY, 0);
+        if (carrying == InteractionHand.MAIN_HAND) {
+            state.mainHandRenderState.submit(poses, nodes, light, OverlayTexture.NO_OVERLAY, 0);
+        } else {
+            state.offHandRenderState.submit(poses, nodes, light, OverlayTexture.NO_OVERLAY, 0);
+        }
         poses.popPose();
         poses.popPose();
         ci.cancel();
