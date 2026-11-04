@@ -6,6 +6,7 @@
     "PlayerModelMixin",
     "PlayerItemInHandLayerMixin",
     "MinecraftHandPriorityMixin",
+    "CarriedItemModelContextMixin",
     "FirstPersonBlocksMixin",
     "KeyboardInputMountMixin",
     "BoatControlMixin"
