@@ -227,3 +227,23 @@ mining, swimming, or mounting regressions.
 then swapping it to the offhand and taking another. Repeat with a bed and a
 minecart. F5 must remain unchanged. A successful compile does not guarantee
 visual equivalence.
+
+## Alpha 4 Hotfix 13 — dried ghast, copper bars and F1 front faces
+
+- Keep `minecraft:dried_ghast` in **one hand**, without any two-hand posture
+  or restrictions.
+- All 8 vanilla copper bars variants (four oxidation states, waxed/unwaxed)
+  are also **one-handed**; iron bars remain unchanged.
+- Turn only `minecraft:crafter` and `minecraft:observer` horizontally by
+  180° in first-person, keeping their scale, translation, pitch, roll, third-person
+  alignment and all other objects unchanged.
+- The corresponding Block-Accurate v26 texture pack is distributed separately:
+  it adds the vanilla **decorated pot** special renderer and editable model
+  display transforms, preserving ceramic decoration data.
+- No other mod-side model or behavior changes from working Hotfix 12.
+
+**Manual verification:** dried ghast, all copper bar oxidized/waxed variants,
+crafter/observer in F1 and F5, decorated pot while carrying in first and third
+person, and offhand priority in both views. Test the decorated pot texture pack
+with no other pack overriding its files; its baseline visual transforms are
+vanilla and may need further adjustment.
