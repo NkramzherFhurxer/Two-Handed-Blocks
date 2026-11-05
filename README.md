@@ -276,3 +276,16 @@ vanilla and may need further adjustment.
 - Prior working Hotfix 12 hand precedence and orientation normalization remain
   unchanged. Both modifications are visual experiments requiring gameplay
   screenshots, not guaranteed final alignments.
+
+## Alpha 4 Hotfix 16 — raise the decorated-pot F1 grip noticeably
+
+- Hotfix 15 feedback: the hands **still** held the pot at its bottom corners in F1.
+- Found why: that version set pot-only F1 arm height to `0.10f` versus
+  the original `0.09f`; effectively no improvement.
+- Change only the pot's F1 arm height to `0.38f`, retaining the existing
+  pot-only side offset `0.30f` and yaw `28°`. This should move the arms
+  upward alongside the pot, not move, rotate or scale the pot itself.
+- All other object poses, F5, hand priority, combat/swim/mount restrictions,
+  and resource pack Block-Accurate v28 remain untouched.
+- Needs actual game screenshots: if arms are now too high, refine the
+  pot-only height; **do not** modify other item profiles.
