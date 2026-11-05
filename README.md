@@ -305,3 +305,27 @@ vanilla and may need further adjustment.
 - All other models, the working offhand priority, and movement/interaction
   restrictions remain unchanged. This is a visual hypothesis pending an
   in-game screenshot.
+
+## Alpha 4 Hotfix 18 — Totem of Undying and occupied hands
+
+- When the player carries any two-handed block in the main hand, a Totem of
+  Undying equipped in the offhand does **not** activate upon fatal damage.
+- When the player carries a two-handed block in the offhand, a totem in the
+  main hand also does **not** activate.
+- The inactive totem is **not consumed**; once the carried block is deselected
+  or removed, the totem works normally again.
+- Players with a one-handed item plus totem, or no two-handed block at all,
+  retain vanilla totem protection. Mobs holding totems are unaffected.
+- Implemented at the server-side `LivingEntity.checkTotemDeathProtection`
+  decision point, without changing F1/F5 animations, priority, movement
+  restrictions or resource-pack files.
+- Only vanilla Totems of Undying in the inactive hand are suppressed; other
+  modded death-protection mechanics are not globally disabled.
+
+**Important testing:** test on a disposable survival world with cheats;
+do not rely on a totem in a two-handed situation until verified. Use real
+fatal damage or `/damage @s 100 minecraft:generic` (NOT `/kill`, which
+bypasses totems even in vanilla). Test (1) stone main + totem off, (2)
+totem main + stone off, (3) sword main + totem off, (4) stone main then
+switch to sword without moving the totem, and (5) a mob holding a totem.
+Verify the totem is not consumed in cases (1) and (2).
