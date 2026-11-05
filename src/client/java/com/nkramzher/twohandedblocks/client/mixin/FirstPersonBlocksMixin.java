@@ -76,22 +76,16 @@ public abstract class FirstPersonBlocksMixin {
         if (!BlockRules.isCarriedBlock(stack) || state.isScoping || playerState.avatarRenderState == null) return;
 
         poses.pushPose();
-        // A decorated pot is taller and narrower than a full block.
-        // Hotfix 15 accidentally moved the F1 arm height by only +0.01
-        // compared to the vanilla two-hand rest pose, effectively unchanged.
-        // Lift its hands substantially to meet the pot's side walls near
-        // mid-height instead of clinging to its bottom corners.
-        // Keep the pose of EVERY other carried item fully unchanged.
-        boolean decoratedPot = CarriedModelProfile.isDecoratedPot(stack);
+        // Keep the original stable arm pose for every block, including
+        // the decorated pot. Pot-only arm translations in Hotfixes 14-16
+        // made the arms look unnaturally elongated in first person.
+        // Fine tuning the pot is now done with the resource-pack model.
         if (!playerState.avatarRenderState.isInvisible) {
-            // First-person arms behind the block, in a symmetrical holding pose.
             for (HumanoidArm arm : HumanoidArm.values()) {
                 poses.pushPose();
                 float side = arm == HumanoidArm.RIGHT ? 1.0f : -1.0f;
-                float sideOffset = decoratedPot ? 0.30f : 0.43f;
-                float verticalOffset = decoratedPot ? 0.38f : 0.09f;
-                poses.translate(-side * sideOffset, verticalOffset, -0.02f);
-                poses.rotateDegrees(Axis.YP, side * (decoratedPot ? 28.0f : 32.0f));
+                poses.translate(-side * 0.43f, 0.09f, -0.02f);
+                poses.rotateDegrees(Axis.YP, side * 32.0f);
                 this.renderPlayerArm(poses, nodes, light, inverseHeight, 0.0f, arm, playerState);
                 poses.popPose();
             }
