@@ -329,3 +329,26 @@ bypasses totems even in vanilla). Test (1) stone main + totem off, (2)
 totem main + stone off, (3) sword main + totem off, (4) stone main then
 switch to sword without moving the totem, and (5) a mob holding a totem.
 Verify the totem is not consumed in cases (1) and (2).
+
+## Alpha 4 Hotfix 19 — no hand-powered climbing with two-handed blocks
+
+- Carrying a two-handed block in **either hand** makes the player unable to
+  climb anything via Minecraft's `LivingEntity.onClimbable` mechanism.
+  This covers vanilla ladders, scaffolding, ordinary vines, Nether twisting
+  and weeping vines, cave vines, and usable trapdoors above ladders.
+- Scaffolding can still be jumped up normally even when its climbable status
+  is false, so suppress `jumpFromGround` while inside or standing directly
+  on scaffolding with a two-handed item.
+- This applies on both client and logical server. Mobs and players not
+  carrying two-handed blocks behave as in vanilla.
+- Soul-sand bubble-column elevators, magma bubble columns, water currents,
+  ordinary movement, jumps on solid blocks, falls and externally imposed
+  forces are NOT intercepted. Do not clamp vertical motion globally.
+- Existing F1/F5 block poses, offhand priorities and Hotfix 18 totem
+  behavior remain unchanged. Block-Accurate v33 is untouched.
+
+**Test in Minecraft:** hold stone (main hand), then stone (offhand) while
+attempting to climb a ladder, scaffolding, vine on a wall, twisting vines,
+weeping vines and cave vines; repeat with one-handed item to verify climbing
+works normally. Check bubble-column upward lift with soul sand and water
+in both cases, plus normal jumps on solid ground.
