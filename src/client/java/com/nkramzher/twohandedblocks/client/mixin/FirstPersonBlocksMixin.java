@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.nkramzher.twohandedblocks.BlockRules;
 import com.nkramzher.twohandedblocks.client.CarriedModelProfile;
+import com.nkramzher.twohandedblocks.client.ProtectedHeldModels;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.FirstPersonHandsAndItemsRenderer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
@@ -47,18 +48,30 @@ public abstract class FirstPersonBlocksMixin {
         // Replace ONLY the offhand display state with the primary-hand
         // context here, using the exact cached stack actually drawn in F1.
         // F5 uses a different render state and is completely unaffected.
-        if (player != null && BlockRules.carriedHand(player) == InteractionHand.OFF_HAND
-                && BlockRules.isCarriedBlock(state.offHandItem)) {
-            ItemDisplayContext context = player.getMainArm() == HumanoidArm.RIGHT
-                    ? ItemDisplayContext.FIRST_PERSON_RIGHT_HAND
-                    : ItemDisplayContext.FIRST_PERSON_LEFT_HAND;
-            Minecraft.getInstance().getItemModelResolver().updateForTopItem(
-                    state.offHandRenderState,
-                    state.offHandItem,
-                    context,
-                    player.level(),
-                    player,
-                    player.getId() + context.ordinal());
+        if (player != null) {
+            InteractionHand carrying = BlockRules.carriedHand(player);
+            if (carrying != null) {
+                ItemDisplayContext context = player.getMainArm() == HumanoidArm.RIGHT
+                        ? ItemDisplayContext.FIRST_PERSON_RIGHT_HAND
+                        : ItemDisplayContext.FIRST_PERSON_LEFT_HAND;
+                if (carrying == InteractionHand.OFF_HAND
+                        && BlockRules.isCarriedBlock(state.offHandItem)) {
+                    // Preserve the proven Hotfix 12 offhand normalization.
+                    // Use a protected model only when the bundled model exists.
+                    ItemStack visual = ProtectedHeldModels.visualCopy(state.offHandItem);
+                    Minecraft.getInstance().getItemModelResolver().updateForTopItem(
+                            state.offHandRenderState, visual, context,
+                            player.level(), player, player.getId() + context.ordinal());
+                } else if (carrying == InteractionHand.MAIN_HAND
+                        && BlockRules.isCarriedBlock(state.mainHandItem)) {
+                    ItemStack visual = ProtectedHeldModels.visualCopy(state.mainHandItem);
+                    if (visual != state.mainHandItem) {
+                        Minecraft.getInstance().getItemModelResolver().updateForTopItem(
+                                state.mainHandRenderState, visual, context,
+                                player.level(), player, player.getId() + context.ordinal());
+                    }
+                }
+            }
         }
     }
 
