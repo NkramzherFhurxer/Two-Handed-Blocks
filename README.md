@@ -383,3 +383,36 @@ in both cases, plus normal jumps on solid ground.
 - Before declaring NEA support confirmed, test F5 walking, swimming and riding,
   alternating carried block/offhand, map, lantern and boat poses. This
   compatibility is source-level/collision checked, **not yet in-game verified**.
+
+## Alpha 4 Hotfix 21 — experimental protected F1/F5 models
+
+The client now selects namespaced item models `twohandedblocks:held/<item>`
+**only during rendering** of supported carried items in first or third person.
+It uses a disposable `ItemStack.copy()` with `DataComponents.ITEM_MODEL` set to
+the private model ID. The player's actual inventory item is never changed.
+Existing two-arm animations and hand priority remain intact.
+
+Protection scope:
+- Approved Block-Accurate v33 models: bells, beds, boats, minecarts, doors,
+  decorated pots and other bundled 3D models.
+- Other items fall back to the pre-existing renderer until protected models
+  have been explicitly generated and verified.
+- Texture identifiers remain vanilla where possible, allowing texture-only
+  resource packs to recolor the protected geometry.
+- This is NOT absolute protection from arbitrary mods or packs intentionally
+  modifying the `twohandedblocks` namespace. Beds still refer to vanilla
+  `minecraft:block/<bed>_head/foot` geometry and may require further
+  namespacing if another pack overrides those blocks.
+
+IMPORTANT: The GitHub source branch does not yet carry the full Block-Accurate
+binary resource pack. To test, use the specially **integrated Hotfix 21 JAR**
+which contains both the original v33 models and new protected-namespace
+definitions. A bare GitHub Actions build from this experimental branch is NOT
+ready for play until those resources have been bundled.
+
+Test with a separate, known conflicting resource pack and compare F1/F5:
+- bell, decorated pot, bed, minecart and boat;
+- main and offhand;
+- original textures versus other compatible texture replacements;
+- inventory, world placement and one-handed objects unchanged.
+Do not merge this experiment into main until confirmed.
