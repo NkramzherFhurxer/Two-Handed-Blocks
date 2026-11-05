@@ -5,6 +5,8 @@ import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,9 +22,12 @@ public abstract class PlayerModelMixin extends HumanoidModel<AvatarRenderState> 
 
     @Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;)V", at = @At("TAIL"))
     private void twohandedblocks$poseArms(AvatarRenderState state, CallbackInfo ci) {
-        ItemStack selected = state.mainArm == net.minecraft.world.entity.HumanoidArm.RIGHT
+        ItemStack main = state.mainArm == HumanoidArm.RIGHT
                 ? state.rightHandItemStack : state.leftHandItemStack;
-        if (state.isSpectator || !BlockRules.isCarriedBlock(selected)) return;
+        ItemStack offhand = state.mainArm == HumanoidArm.RIGHT
+                ? state.leftHandItemStack : state.rightHandItemStack;
+        InteractionHand carrying = BlockRules.carriedHand(main, offhand);
+        if (state.isSpectator || carrying == null) return;
 
         // Rest pose: elbows forward and wrists turned in toward the middle of the chest.
         this.rightArm.xRot = -1.28f;

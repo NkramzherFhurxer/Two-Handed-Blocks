@@ -5,7 +5,9 @@
   "mixins": [
     "PlayerSwimmingMixin",
     "EntitySprintMixin",
-    "ServerMinecartInputMixin"
+    "ServerMinecartInputMixin",
+    "TotemCarryRestrictionMixin",
+    "PlayerClimbingMixin"
   ],
   "injectors": {
     "defaultRequire": 1

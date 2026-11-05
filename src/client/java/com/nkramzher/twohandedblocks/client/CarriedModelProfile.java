@@ -109,6 +109,9 @@ public final class CarriedModelProfile {
         // Building stairs, not ladders.
         if (name.endsWith("_stairs")) return 180.0f;
         if (name.equals("crafting_table")) return 180.0f;
+        // Face the working side forward when carried; F1 yaw only.
+        // Do not alter pitch, roll, size, or the approved F5 alignment.
+        if (name.equals("crafter") || name.equals("observer")) return 180.0f;
         if (name.equals("lectern")) return 90.0f; // 180 degrees from the previous -90-degree orientation
         return 0.0f;
     }

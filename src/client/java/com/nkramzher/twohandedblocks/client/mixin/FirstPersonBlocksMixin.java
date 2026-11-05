@@ -7,6 +7,7 @@ import com.nkramzher.twohandedblocks.client.CarriedModelProfile;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.FirstPersonHandsAndItemsRenderer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.client.renderer.state.level.FirstPersonHandsAndItemsRenderState;
 import net.minecraft.client.renderer.state.level.PlayerRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -28,26 +29,61 @@ public abstract class FirstPersonBlocksMixin {
         throw new AssertionError("Mixin shadow was not applied");
     }
 
+    // Always submit the selected carrying hand even if a main-hand item would
+    // normally suppress offhand rendering (e.g. vanilla bow/map poses).
+    @Inject(method = "submitHandsWithItems", at = @At("HEAD"))
+    private void twohandedblocks$showCarriedHand(float partialTicks, PoseStack poses,
+            SubmitNodeCollector nodes, PlayerRenderState playerState,
+            FirstPersonHandsAndItemsRenderState state, CallbackInfo ci) {
+        var player = Minecraft.getInstance().player;
+        if (BlockRules.isCarrying(player)) {
+            state.handRenderSelection =
+                    FirstPersonHandsAndItemsRenderState.HandRenderSelection.RENDER_BOTH_HANDS;
+        }
+
+        // F1 is extracted separately by FirstPersonHandsAndItems, which
+        // resolves its own ItemStackRenderState before this renderer runs.
+        // Unlike F5 this path need not call ItemModelResolver.updateForLiving.
+        // Replace ONLY the offhand display state with the primary-hand
+        // context here, using the exact cached stack actually drawn in F1.
+        // F5 uses a different render state and is completely unaffected.
+        if (player != null && BlockRules.carriedHand(player) == InteractionHand.OFF_HAND
+                && BlockRules.isCarriedBlock(state.offHandItem)) {
+            ItemDisplayContext context = player.getMainArm() == HumanoidArm.RIGHT
+                    ? ItemDisplayContext.FIRST_PERSON_RIGHT_HAND
+                    : ItemDisplayContext.FIRST_PERSON_LEFT_HAND;
+            Minecraft.getInstance().getItemModelResolver().updateForTopItem(
+                    state.offHandRenderState,
+                    state.offHandItem,
+                    context,
+                    player.level(),
+                    player,
+                    player.getId() + context.ordinal());
+        }
+    }
+
     @Inject(method = "submitArmWithItem", at = @At("HEAD"), cancellable = true)
     private void twohandedblocks$renderBlock(PlayerRenderState playerState,
             FirstPersonHandsAndItemsRenderState state, float partialTicks, float xRot,
             InteractionHand hand, float attack, ItemStack stack, float inverseHeight,
             PoseStack poses, SubmitNodeCollector nodes, int light, CallbackInfo ci) {
-        if (!BlockRules.isCarrying(Minecraft.getInstance().player)) return;
-        if (hand == InteractionHand.OFF_HAND) {
-            ci.cancel(); // hide the occupied secondary hand
+        InteractionHand carrying = BlockRules.carriedHand(Minecraft.getInstance().player);
+        if (carrying == null) return;
+        if (hand != carrying) {
+            ci.cancel(); // Hide whichever item is not holding the two-hand block.
             return;
         }
         if (!BlockRules.isCarriedBlock(stack) || state.isScoping || playerState.avatarRenderState == null) return;
 
         poses.pushPose();
+        // Keep the original stable arm pose for every block, including
+        // the decorated pot. Pot-only arm translations in Hotfixes 14-16
+        // made the arms look unnaturally elongated in first person.
+        // Fine tuning the pot is now done with the resource-pack model.
         if (!playerState.avatarRenderState.isInvisible) {
-            // First-person arms behind the block, in a symmetrical holding pose.
             for (HumanoidArm arm : HumanoidArm.values()) {
                 poses.pushPose();
                 float side = arm == HumanoidArm.RIGHT ? 1.0f : -1.0f;
-                // Bring the hands slightly higher and in toward the block sides,
-                // instead of making them look like supports underneath it.
                 poses.translate(-side * 0.43f, 0.09f, -0.02f);
                 poses.rotateDegrees(Axis.YP, side * 32.0f);
                 this.renderPlayerArm(poses, nodes, light, inverseHeight, 0.0f, arm, playerState);
@@ -55,6 +91,8 @@ public abstract class FirstPersonBlocksMixin {
             }
         }
         poses.pushPose();
+        // The model context is normalized before rendering, so either hand
+        // reuses the main-hand's carefully calibrated F1 transforms.
         poses.translate(0.0f, -0.24f, -0.83f);
         // Different model shapes need different orientations. This does not
         // affect item rules and deliberately leaves fence gates untouched.
@@ -83,7 +121,11 @@ public abstract class FirstPersonBlocksMixin {
             poses.rotateDegrees(Axis.ZP, CarriedModelProfile.rollDegrees(profile));
         }
         poses.scale(0.90f, 0.90f, 0.90f);
-        state.mainHandRenderState.submit(poses, nodes, light, OverlayTexture.NO_OVERLAY, 0);
+        if (carrying == InteractionHand.MAIN_HAND) {
+            state.mainHandRenderState.submit(poses, nodes, light, OverlayTexture.NO_OVERLAY, 0);
+        } else {
+            state.offHandRenderState.submit(poses, nodes, light, OverlayTexture.NO_OVERLAY, 0);
+        }
         poses.popPose();
         poses.popPose();
         ci.cancel();

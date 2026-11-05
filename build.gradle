@@ -79,3 +79,37 @@ publishing {
 		// retrieving dependencies.
 	}
 }
+
+
+// Optional, reproducible embedding of the approved Block-Accurate v33 ZIP.
+// Example on Windows:
+//   .\\gradlew build -PtwohandedPackZip="C:/path/Block-Accurate-v33.zip"
+// Built-in pack metadata exists in src/client/resources and is always
+// registered at runtime. If no ZIP is supplied, the build compiles the
+// mod code but does not include the customized Minecraft item models.
+def packZipPath = providers.gradleProperty("twohandedPackZip").orNull
+if (packZipPath != null && !packZipPath.isBlank()) {
+    def packInput = file(packZipPath)
+    def generatedPackDir = layout.buildDirectory.dir("generated/bundled-item-models")
+    def prepareModels = tasks.register("prepareBundledItemModels") {
+        inputs.file(packInput)
+        outputs.dir(generatedPackDir)
+        doLast {
+            if (!packInput.isFile()) {
+                throw new GradleException("Missing Block-Accurate v33 ZIP: " + packInput)
+            }
+            // pack.mcmeta is already included as metadata in our mod source.
+            // Never bundle the user's entire texture pack as root mod assets.
+            copy {
+                from zipTree(packInput)
+                into new File(generatedPackDir.get().asFile, "resourcepacks/twohanded_visuals")
+                include "assets/**", "LICENSE.txt", "ATRIBUCION-CAMPANA.txt"
+                exclude "pack.mcmeta"
+            }
+        }
+    }
+    sourceSets.client.resources.srcDir(generatedPackDir)
+    tasks.named("processClientResources").configure {
+        dependsOn prepareModels
+    }
+}

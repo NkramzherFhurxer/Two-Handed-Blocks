@@ -1,6 +1,7 @@
 package com.nkramzher.twohandedblocks;
 
 import java.util.Set;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
@@ -27,7 +28,7 @@ public final class BlockRules {
             // Keep the dragon head in the same family for consistent handling.
             "dragon_head", "skeleton_skull", "wither_skeleton_skull", "zombie_head",
             "creeper_head", "piglin_head", "player_head",
-            "light", "barrier", "structure_void",
+            "light", "barrier", "structure_void", "dried_ghast",
             "torch", "soul_torch", "redstone_torch", "lantern", "soul_lantern",
             "lever", "tripwire_hook", "lightning_rod", "ladder", "chain", "iron_chain", "flower_pot", "iron_bars", "glass_pane", "red_shrub", "shelf_mushroom",
             "repeater", "comparator", "daylight_detector", "redstone_wire",
@@ -74,6 +75,10 @@ public final class BlockRules {
                 || path.endsWith("_trapdoor")
                 || path.endsWith("_shelf")
                 || path.endsWith("_stained_glass_pane")
+                // All 8 copper-bar variants: normal, exposed, weathered,
+                // oxidized, and each of their waxed counterparts.
+                || path.equals("copper_bars")
+                || path.endsWith("_copper_bars")
                 || path.endsWith("_shelf_fungus")
                 || path.endsWith("_mushroom")
                 || path.endsWith("_petals")
@@ -111,7 +116,29 @@ public final class BlockRules {
         return !oneHand(path);
     }
 
+    /**
+     * The main hand wins when both hands hold two-handed blocks. Otherwise,
+     * a two-handed block in the off hand wins over any one-handed main item.
+     * Nothing is moved between the actual inventory slots.
+     */
+    public static InteractionHand carriedHand(ItemStack mainHand, ItemStack offHand) {
+        if (isCarriedBlock(mainHand)) return InteractionHand.MAIN_HAND;
+        if (isCarriedBlock(offHand)) return InteractionHand.OFF_HAND;
+        return null;
+    }
+
+    public static InteractionHand carriedHand(Player player) {
+        if (player == null || player.isSpectator()) return null;
+        return carriedHand(player.getMainHandItem(), player.getOffhandItem());
+    }
+
     public static boolean isCarrying(Player player) {
-        return player != null && !player.isSpectator() && isCarriedBlock(player.getMainHandItem());
+        return carriedHand(player) != null;
+    }
+
+    /** True if the player is carrying a two-handed block in the OTHER hand. */
+    public static boolean isInactiveHand(Player player, InteractionHand attempted) {
+        InteractionHand carrying = carriedHand(player);
+        return carrying != null && attempted != carrying;
     }
 }

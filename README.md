@@ -143,3 +143,243 @@ This is an **experimental classification**, not a complete catalog of all Minecr
   one-handed exceptions.
 - Static validation done; full Gradle build with Java 25 and in-game test
   remain to be checked in GitHub Actions.
+
+## Alpha 4 Hotfix 8 — offhand carrying priority (experimental)
+
+- Priority: main-hand two-handed block > offhand two-handed block > normal one-handed gameplay.
+- An offhand block activates the two-arm pose and the same restrictions on attacks, breaking,
+  sprint-swimming and steering boats, minecarts, horses and nautiluses.
+- Only the selected carrying hand can place/use its item. The other hand stays in inventory
+  but is visually suppressed in first- and third-person.
+- On right-click, the client skips the inactive hand rather than letting the main-hand item
+  (for example, a torch) consume the action before the offhand block.
+- If both hands hold two-handed blocks, the main-hand block is displayed/used.
+- Single-hand gameplay retains vanilla order and behavior.
+- No changes to texture packs or per-block display transforms.
+- Passive offhand effects such as a totem are not disabled.
+
+**Test in game:** try (1) sword + offhand stone, (2) torch + offhand chest,
+(3) main-hand stone + offhand diamond block, (4) swapping hands with F,
+(5) placing against chests/doors, (6) F1/F5 with left-handed settings,
+(7) attacks/swimming/riding with offhand-only carried blocks.
+The new right-click interception is experimental and needs real gameplay testing.
+
+## Alpha 4 Hotfix 9 — offhand bell alignment (visual test)
+
+- First-person: shift the offhand bell slightly right and counter-rotate the tilt.
+- Third-person: mirror its bell-only torso offset and quarter-turn the sideways item pose.
+- Main-hand bell and all other block positions/transforms unchanged.
+- Block-Accurate v23 remains unchanged. No resource pack edits.
+- This is a first visual calibration. Compare F1/F5 offhand screenshots in-game
+  before treating the angles as final.
+
+## Alpha 4 Hotfix 10 — shared model orientation for either carrying hand
+
+- When the offhand carries the selected two-handed block, its baked item model
+  uses the same first-person and third-person display context as the main hand.
+- Right-handed players use the RIGHT-hand item context as the reference.
+  Left-handed players use their LEFT-hand item context.
+- Removes the experimental bell-only offhand F1/F5 offsets from Hotfix 9.
+  The existing main-hand offsets, yaw/roll, and animations are unchanged.
+- Affects two-handed offhand blocks only, not ordinary one-handed items,
+  GUI previews, dropped items, or placed blocks.
+- Does not modify the resource pack; Block-Accurate v25 stays intact.
+- This normalizes model transforms, not inventory/interaction priority, which
+  continues to follow the previously established main > offhand rule.
+
+**Test:** switch the same bed, bell, chest, boat, minecart and ordinary block
+between primary and offhand while observing F1/F5 (including player left-handed
+setting). Their model orientation/position should match; no right-click,
+mining, swimming, or mounting regressions.
+
+## Alpha 4 Hotfix 11 — F1 cached offhand render state
+
+- Hotfix 10 worked in F5 but the original first-person offhand models did not
+  reliably match the main-hand orientation.
+- First-person rendering may use a cached/copy of the player's offhand item.
+  The former object-identity check was too strict. F1 now matches both item
+  and components (not object identity) before applying the main-hand model
+  display context.
+- The successful F5 logic, model transforms, poses, handling mechanics,
+  and resource packs remain untouched.
+- Test F1 offhand bell, bed, chest, boat, minecart, etc. beside the same item
+  held in the primary hand; verify F5 is unchanged. This is a candidate fix,
+  pending screenshots from actual gameplay.
+
+## Alpha 4 Hotfix 12 — direct first-person state correction (experimental)
+
+**Hotfix 11 in-game result:** no change in F1; F5 continued to work.
+
+- First-person and third-person build their render states along different paths.
+  Our old `ItemModelResolver.updateForLiving` injection did not normalize
+  the first-person model in actual gameplay.
+- Now directly rebuild `state.offHandRenderState` at the start of
+  `FirstPersonHandsAndItemsRenderer.submitHandsWithItems`, using the cached
+  F1 item and the player's primary-hand `ItemDisplayContext`.
+- The former shared resolver mixin was narrowed to the unchanged, confirmed
+  working F5 path only. F1 doesn't depend on its ItemStack identity any more.
+- The exact same `FirstPersonBlocksMixin` arm position, model rotations and
+  scale are reused once the F1 render state is normalized.
+- No changes to texturepack files, item priority, block rules, gameplay controls
+  or the validated third-person pose.
+
+**Verify in-game** by putting a bell in the main hand, taking an F1 screenshot,
+then swapping it to the offhand and taking another. Repeat with a bed and a
+minecart. F5 must remain unchanged. A successful compile does not guarantee
+visual equivalence.
+
+## Alpha 4 Hotfix 13 — dried ghast, copper bars and F1 front faces
+
+- Keep `minecraft:dried_ghast` in **one hand**, without any two-hand posture
+  or restrictions.
+- All 8 vanilla copper bars variants (four oxidation states, waxed/unwaxed)
+  are also **one-handed**; iron bars remain unchanged.
+- Turn only `minecraft:crafter` and `minecraft:observer` horizontally by
+  180° in first-person, keeping their scale, translation, pitch, roll, third-person
+  alignment and all other objects unchanged.
+- The corresponding Block-Accurate v26 texture pack is distributed separately:
+  it adds the vanilla **decorated pot** special renderer and editable model
+  display transforms, preserving ceramic decoration data.
+- No other mod-side model or behavior changes from working Hotfix 12.
+
+**Manual verification:** dried ghast, all copper bar oxidized/waxed variants,
+crafter/observer in F1 and F5, decorated pot while carrying in first and third
+person, and offhand priority in both views. Test the decorated pot texture pack
+with no other pack overriding its files; its baseline visual transforms are
+vanilla and may need further adjustment.
+
+## Alpha 4 Hotfix 14 — decorated pot F1 grip (experimental)
+
+- No change to the already proven two-hand priority and F1/F5 offhand matching.
+- Only when carrying `minecraft:decorated_pot`, bring the arms 0.06 closer to
+  the object's sides and lower their pose by 0.12 in first-person so the
+  player no longer appears to grip its upper corners.
+- All other blocks and vehicles retain their existing poses exactly.
+- Third-person pot orientation is addressed **only** in companion resource
+  pack Block-Accurate v27: special item model retained and
+  `thirdperson_righthand.rotation` experimentally calibrated from
+  `[0,90,0]` to `[75,45,180]`. No other model transforms were changed.
+- This calibration requires actual in-game F1/F5 screenshots. If the pot is
+  still tilted or the arms miss its sides, adjust only the pot parameters.
+- The v26 pack and Hotfix 13 are valid previous backups.
+
+## Alpha 4 Hotfix 15 — pot grip follow-up
+
+- User testing of Hotfix 14: decorated pot **still gripped at its corners in F1**.
+  In F5, the pot stood vertically but was upside-down.
+- In F1 only, for `minecraft:decorated_pot`, hands move closer to the pot's
+  sides (0.37 to 0.30), higher (-0.03 to 0.10) and angle inward slightly less
+  (32° to 28°). Every other block's pose remains identical.
+- F5 pot correction lives **only** in Block-Accurate v28 (separate ZIP):
+  change model third-person rotation [75,45,180] to [75,45,0], removing
+  the extra Z half-turn that appeared to invert the pot.
+- Prior working Hotfix 12 hand precedence and orientation normalization remain
+  unchanged. Both modifications are visual experiments requiring gameplay
+  screenshots, not guaranteed final alignments.
+
+## Alpha 4 Hotfix 16 — raise the decorated-pot F1 grip noticeably
+
+- Hotfix 15 feedback: the hands **still** held the pot at its bottom corners in F1.
+- Found why: that version set pot-only F1 arm height to `0.10f` versus
+  the original `0.09f`; effectively no improvement.
+- Change only the pot's F1 arm height to `0.38f`, retaining the existing
+  pot-only side offset `0.30f` and yaw `28°`. This should move the arms
+  upward alongside the pot, not move, rotate or scale the pot itself.
+- All other object poses, F5, hand priority, combat/swim/mount restrictions,
+  and resource pack Block-Accurate v28 remain untouched.
+- Needs actual game screenshots: if arms are now too high, refine the
+  pot-only height; **do not** modify other item profiles.
+
+## Alpha 4 Hotfix 17 — revert pot-only arm offsets
+
+- In-game feedback on Hotfix 16: the decorated pot appeared to make both
+  forearms stretch unnaturally in F1. It was caused by moving the whole arm
+  render vertically to +0.38f, not by any change to player geometry.
+- Restore the stable first-person arm pose for **all** two-handed items:
+  side 0.43f, vertical 0.09f, yaw 32°. Remove the separate decorated-pot
+  arm pose and its unused predicate.
+- The companion Block-Accurate **v29** resource pack shifts only the pot's
+  first-person item-model translation to [0,2,0] (was [0,0,0]), aiming
+  for a more natural grip with normal-length arms. This adjustment can be
+  edited in the pack and tested with F3+T. F5 is not changed from v28.
+- All other models, the working offhand priority, and movement/interaction
+  restrictions remain unchanged. This is a visual hypothesis pending an
+  in-game screenshot.
+
+## Alpha 4 Hotfix 18 — Totem of Undying and occupied hands
+
+- When the player carries any two-handed block in the main hand, a Totem of
+  Undying equipped in the offhand does **not** activate upon fatal damage.
+- When the player carries a two-handed block in the offhand, a totem in the
+  main hand also does **not** activate.
+- The inactive totem is **not consumed**; once the carried block is deselected
+  or removed, the totem works normally again.
+- Players with a one-handed item plus totem, or no two-handed block at all,
+  retain vanilla totem protection. Mobs holding totems are unaffected.
+- Implemented at the server-side `LivingEntity.checkTotemDeathProtection`
+  decision point, without changing F1/F5 animations, priority, movement
+  restrictions or resource-pack files.
+- Only vanilla Totems of Undying in the inactive hand are suppressed; other
+  modded death-protection mechanics are not globally disabled.
+
+**Important testing:** test on a disposable survival world with cheats;
+do not rely on a totem in a two-handed situation until verified. Use real
+fatal damage or `/damage @s 100 minecraft:generic` (NOT `/kill`, which
+bypasses totems even in vanilla). Test (1) stone main + totem off, (2)
+totem main + stone off, (3) sword main + totem off, (4) stone main then
+switch to sword without moving the totem, and (5) a mob holding a totem.
+Verify the totem is not consumed in cases (1) and (2).
+
+## Alpha 4 Hotfix 19 — no hand-powered climbing with two-handed blocks
+
+- Carrying a two-handed block in **either hand** makes the player unable to
+  climb anything via Minecraft's `LivingEntity.onClimbable` mechanism.
+  This covers vanilla ladders, scaffolding, ordinary vines, Nether twisting
+  and weeping vines, cave vines, and usable trapdoors above ladders.
+- Scaffolding can still be jumped up normally even when its climbable status
+  is false, so suppress `jumpFromGround` while inside or standing directly
+  on scaffolding with a two-handed item.
+- This applies on both client and logical server. Mobs and players not
+  carrying two-handed blocks behave as in vanilla.
+- Soul-sand bubble-column elevators, magma bubble columns, water currents,
+  ordinary movement, jumps on solid blocks, falls and externally imposed
+  forces are NOT intercepted. Do not clamp vertical motion globally.
+- Existing F1/F5 block poses, offhand priorities and Hotfix 18 totem
+  behavior remain unchanged. Block-Accurate v33 is untouched.
+
+**Test in Minecraft:** hold stone (main hand), then stone (offhand) while
+attempting to climb a ladder, scaffolding, vine on a wall, twisting vines,
+weeping vines and cave vines; repeat with one-handed item to verify climbing
+works normally. Check bubble-column upward lift with soul sand and water
+in both cases, plus normal jumps on solid ground.
+
+## Alpha 4 Hotfix 20 — integrated models and NEA coexistence (experimental)
+
+- The approved Block-Accurate v33 pack can now be embedded in the mod JAR
+  under `resourcepacks/twohanded_visuals/` with the Fabric resource-loader
+  v1 `ResourceLoader.registerBuiltinPack(... ALWAYS_ENABLED)` API.
+- This built-in pack remains enabled whenever the mod runs. **Being
+  required/always enabled does not guarantee higher priority over all user
+  packs**; resource ordering and server-provided packs may override it.
+  This still requires in-game verification with NewDefault+.
+- The mod detects the optional `notenoughanimations` mod. Its existing
+  priority-500 PlayerModelMixin applies our final arm pose only for two-handed
+  blocks, leaving one-handed animations unchanged. NEA is **not embedded**:
+  users must install its independent Fabric JAR (1.12.6 or newer).
+- Build with an explicit ZIP to produce a fully integrated jar:
+  `./gradlew build -PtwohandedPackZip=/path/to/Block-Accurate-v33.zip`
+  (on Windows use `.\\gradlew build -PtwohandedPackZip="C:/path/Block-Accurate-v33.zip"`).
+  Gradle extracts only `assets/**` and attribution/license files into the
+  built-in pack. The original resource pack can then be disabled in Minecraft.
+- **IMPORTANT:** A vanilla `./gradlew build` without that ZIP still compiles
+  a code-only mod JAR with only pack metadata. The default GitHub Actions
+  artifact is therefore NOT the integrated release; use the specially
+  assembled integrated JAR or build locally with the explicit ZIP property.
+- Do not repackage or include the Not Enough Animations JAR within this mod;
+  it remains independent and retains its own license.
+- The original Block-Accurate models are MIT licensed, while the adapted bell
+  model/texture by toni_4819 retain CC BY-NC 4.0, as noted in the embedded
+  model pack's `LICENSE.txt` and `ATRIBUCION-CAMPANA.txt`.
+- Before declaring NEA support confirmed, test F5 walking, swimming and riding,
+  alternating carried block/offhand, map, lantern and boat poses. This
+  compatibility is source-level/collision checked, **not yet in-game verified**.
