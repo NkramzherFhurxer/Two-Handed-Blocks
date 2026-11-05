@@ -289,3 +289,19 @@ vanilla and may need further adjustment.
   and resource pack Block-Accurate v28 remain untouched.
 - Needs actual game screenshots: if arms are now too high, refine the
   pot-only height; **do not** modify other item profiles.
+
+## Alpha 4 Hotfix 17 — revert pot-only arm offsets
+
+- In-game feedback on Hotfix 16: the decorated pot appeared to make both
+  forearms stretch unnaturally in F1. It was caused by moving the whole arm
+  render vertically to +0.38f, not by any change to player geometry.
+- Restore the stable first-person arm pose for **all** two-handed items:
+  side 0.43f, vertical 0.09f, yaw 32°. Remove the separate decorated-pot
+  arm pose and its unused predicate.
+- The companion Block-Accurate **v29** resource pack shifts only the pot's
+  first-person item-model translation to [0,2,0] (was [0,0,0]), aiming
+  for a more natural grip with normal-length arms. This adjustment can be
+  edited in the pack and tested with F3+T. F5 is not changed from v28.
+- All other models, the working offhand priority, and movement/interaction
+  restrictions remain unchanged. This is a visual hypothesis pending an
+  in-game screenshot.
