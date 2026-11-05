@@ -352,3 +352,34 @@ attempting to climb a ladder, scaffolding, vine on a wall, twisting vines,
 weeping vines and cave vines; repeat with one-handed item to verify climbing
 works normally. Check bubble-column upward lift with soul sand and water
 in both cases, plus normal jumps on solid ground.
+
+## Alpha 4 Hotfix 20 — integrated models and NEA coexistence (experimental)
+
+- The approved Block-Accurate v33 pack can now be embedded in the mod JAR
+  under `resourcepacks/twohanded_visuals/` with the Fabric resource-loader
+  v1 `ResourceLoader.registerBuiltinPack(... ALWAYS_ENABLED)` API.
+- This built-in pack remains enabled whenever the mod runs. **Being
+  required/always enabled does not guarantee higher priority over all user
+  packs**; resource ordering and server-provided packs may override it.
+  This still requires in-game verification with NewDefault+.
+- The mod detects the optional `notenoughanimations` mod. Its existing
+  priority-500 PlayerModelMixin applies our final arm pose only for two-handed
+  blocks, leaving one-handed animations unchanged. NEA is **not embedded**:
+  users must install its independent Fabric JAR (1.12.6 or newer).
+- Build with an explicit ZIP to produce a fully integrated jar:
+  `./gradlew build -PtwohandedPackZip=/path/to/Block-Accurate-v33.zip`
+  (on Windows use `.\\gradlew build -PtwohandedPackZip="C:/path/Block-Accurate-v33.zip"`).
+  Gradle extracts only `assets/**` and attribution/license files into the
+  built-in pack. The original resource pack can then be disabled in Minecraft.
+- **IMPORTANT:** A vanilla `./gradlew build` without that ZIP still compiles
+  a code-only mod JAR with only pack metadata. The default GitHub Actions
+  artifact is therefore NOT the integrated release; use the specially
+  assembled integrated JAR or build locally with the explicit ZIP property.
+- Do not repackage or include the Not Enough Animations JAR within this mod;
+  it remains independent and retains its own license.
+- The original Block-Accurate models are MIT licensed, while the adapted bell
+  model/texture by toni_4819 retain CC BY-NC 4.0, as noted in the embedded
+  model pack's `LICENSE.txt` and `ATRIBUCION-CAMPANA.txt`.
+- Before declaring NEA support confirmed, test F5 walking, swimming and riding,
+  alternating carried block/offhand, map, lantern and boat poses. This
+  compatibility is source-level/collision checked, **not yet in-game verified**.
