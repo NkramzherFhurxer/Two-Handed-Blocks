@@ -87,10 +87,10 @@ publishing {
 // built-in Fabric pack, NOT under the mod's root Minecraft assets.
 //
 // The source bundle must be committed to:
-//   bundled-resources/twohanded-visuals-v33.tar.xz
+//   bundled-resources/twohanded-visuals-v33.tar.gz.b64
 // A code-only build (without the archive) is allowed for development but
 // is NOT a playable Hotfix 21 distribution.
-def bundledResourceArchive = file("bundled-resources/twohanded-visuals-v33.tar.xz")
+def bundledResourceArchive = file("bundled-resources/twohanded-visuals-v33.tar.gz.b64")
 def externalPackZip = providers.gradleProperty("twohandedPackZip").orNull
 
 if (bundledResourceArchive.isFile()) {
