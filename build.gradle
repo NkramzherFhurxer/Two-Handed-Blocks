@@ -81,35 +81,61 @@ publishing {
 }
 
 
-// Optional, reproducible embedding of the approved Block-Accurate v33 ZIP.
-// Example on Windows:
-//   .\\gradlew build -PtwohandedPackZip="C:/path/Block-Accurate-v33.zip"
-// Built-in pack metadata exists in src/client/resources and is always
-// registered at runtime. If no ZIP is supplied, the build compiles the
-// mod code but does not include the customized Minecraft item models.
-def packZipPath = providers.gradleProperty("twohandedPackZip").orNull
-if (packZipPath != null && !packZipPath.isBlank()) {
-    def packInput = file(packZipPath)
-    def generatedPackDir = layout.buildDirectory.dir("generated/bundled-item-models")
-    def prepareModels = tasks.register("prepareBundledItemModels") {
-        inputs.file(packInput)
-        outputs.dir(generatedPackDir)
+// Approved Block-Accurate v33 + protected held-item models.
+// The source archive is reproducible and SHA256-verified by
+// tools/stage_protected_resources.py. Its model files remain inside the
+// built-in Fabric pack, NOT under the mod's root Minecraft assets.
+//
+// The source bundle must be committed to:
+//   bundled-resources/twohanded-visuals-v33.tar.xz
+// A code-only build (without the archive) is allowed for development but
+// is NOT a playable Hotfix 21 distribution.
+def bundledResourceArchive = file("bundled-resources/twohanded-visuals-v33.tar.xz")
+def externalPackZip = providers.gradleProperty("twohandedPackZip").orNull
+
+if (bundledResourceArchive.isFile()) {
+    def generatedDir = layout.buildDirectory.dir("generated/bundled-item-models")
+    def outputDir = layout.buildDirectory.dir(
+            "generated/bundled-item-models/resourcepacks/twohanded_visuals")
+    def stage = tasks.register("stageProtectedModels", Exec) {
+        inputs.file(bundledResourceArchive)
+        inputs.file(file("tools/stage_protected_resources.py"))
+        inputs.file(file("src/client/java/com/nkramzher/twohandedblocks/client/ProtectedHeldModels.java"))
+        outputs.dir(outputDir)
+        commandLine("python3", "tools/stage_protected_resources.py",
+                "--bundle", bundledResourceArchive.absolutePath,
+                "--output", outputDir.get().asFile.absolutePath,
+                "--java-rules", file("src/client/java/com/nkramzher/twohandedblocks/client/ProtectedHeldModels.java").absolutePath)
+    }
+    sourceSets.client.resources.srcDir(generatedDir)
+    tasks.named("processClientResources").configure {
+        dependsOn(stage)
+    }
+} else if (externalPackZip != null && !externalPackZip.isBlank()) {
+    // Backwards-compatible option for a local, manually supplied pack ZIP.
+    // Does not create protected namespace assets; for this preview use the
+    // integrated source archive above instead.
+    def externalZip = file(externalPackZip)
+    def generatedDir = layout.buildDirectory.dir("generated/manual-pack-models")
+    def prepare = tasks.register("prepareManualItemModels") {
+        inputs.file(externalZip)
+        outputs.dir(generatedDir)
         doLast {
-            if (!packInput.isFile()) {
-                throw new GradleException("Missing Block-Accurate v33 ZIP: " + packInput)
+            if (!externalZip.isFile()) {
+                throw new GradleException("Missing resource pack ZIP: " + externalZip)
             }
-            // pack.mcmeta is already included as metadata in our mod source.
-            // Never bundle the user's entire texture pack as root mod assets.
             copy {
-                from zipTree(packInput)
-                into new File(generatedPackDir.get().asFile, "resourcepacks/twohanded_visuals")
+                from zipTree(externalZip)
+                into new File(generatedDir.get().asFile, "resourcepacks/twohanded_visuals")
                 include "assets/**", "LICENSE.txt", "ATRIBUCION-CAMPANA.txt"
                 exclude "pack.mcmeta"
             }
         }
     }
-    sourceSets.client.resources.srcDir(generatedPackDir)
+    sourceSets.client.resources.srcDir(generatedDir)
     tasks.named("processClientResources").configure {
-        dependsOn prepareModels
+        dependsOn(prepare)
     }
+} else {
+    logger.warn("Approved protected resource bundle absent: Hotfix 21 code-only build.")
 }
