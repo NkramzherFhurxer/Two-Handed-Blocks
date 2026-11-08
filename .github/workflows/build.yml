@@ -23,7 +23,18 @@ jobs:
         run: chmod +x ./gradlew
       - name: build
         run: ./gradlew build
+      - name: verify protected visual resources
+        id: protected_resources
+        run: |
+          if [[ -f bundled-resources/twohanded-visuals-v33.tar.xz ]]; then
+            python3 tools/check_integrated_jar.py build/libs/twohandedblocks-0.2.0-alpha4-hotfix21.jar
+            echo "complete=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::Experimental Hotfix 21 build is code-only; bundled v33 archive not committed, not distributing incomplete JAR."
+            echo "complete=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: capture build artifacts
+        if: ${{ steps.protected_resources.outputs.complete == 'true' || (github.head_ref != 'feature/protected-held-models' && github.ref_name != 'feature/protected-held-models') }}
         uses: actions/upload-artifact@v7
         with:
           name: Artifacts
