@@ -26,7 +26,7 @@ jobs:
       - name: verify protected visual resources
         id: protected_resources
         run: |
-          if [[ -f bundled-resources/twohanded-visuals-v33.tar.xz ]]; then
+          if [[ -f bundled-resources/twohanded-visuals-v33.tar.gz.b64 ]]; then
             python3 tools/check_integrated_jar.py build/libs/twohandedblocks-0.2.0-alpha4-hotfix21.jar
             echo "complete=true" >> "$GITHUB_OUTPUT"
           else
