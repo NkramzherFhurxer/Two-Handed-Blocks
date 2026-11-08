@@ -25,7 +25,13 @@ def stage(archive_path: Path, destination: Path, rules: Path) -> None:
         members = archive.getmembers()
         if len(members) != EXPECTED_RESOURCE_COUNT:
             raise SystemExit(f"Expected {EXPECTED_RESOURCE_COUNT} resources; got {len(members)}")
+        if not any(entry.name == "pack.mcmeta" for entry in members):
+            raise SystemExit("Source pack missing pack.mcmeta")
         for entry in members:
+            # pack.mcmeta is already tracked as a normal client resource.
+            # Never stage it twice or Gradle may reject duplicate paths.
+            if entry.name == "pack.mcmeta":
+                continue
             target = (destination / entry.name).resolve()
             if not target.is_relative_to(destination.resolve()) or not entry.isfile():
                 raise SystemExit(f"Unsafe archive member: {entry.name}")
@@ -43,7 +49,7 @@ def stage(archive_path: Path, destination: Path, rules: Path) -> None:
     expected = set(re.findall(r'"([a-z0-9_]+)"', match.group(1)))
     if models != expected:
         raise SystemExit(f"Model IDs mismatch: missing={expected-models}, extra={models-expected}")
-    for path in ("pack.mcmeta", "LICENSE.txt", "ATRIBUCION-CAMPANA.txt",
+    for path in ("LICENSE.txt", "ATRIBUCION-CAMPANA.txt",
                  "assets/minecraft/models/item/bell.json",
                  "assets/twohandedblocks/items/held/decorated_pot.json"):
         if not (destination / path).is_file():
