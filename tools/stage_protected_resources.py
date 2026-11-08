@@ -2,6 +2,7 @@
 """Stage approved Two-Handed-Blocks v33 assets into Fabric's client resources."""
 from __future__ import annotations
 import argparse
+import base64
 import hashlib
 import io
 import re
@@ -9,19 +10,20 @@ import shutil
 import tarfile
 from pathlib import Path
 
-EXPECTED_SHA256 = "cb432874752be0d64d76234361e062ce76b21b112e05257a661cb13d222eff7f"
+EXPECTED_SHA256 = "3a91ed4802a9e1ff1c51dbf63ab20c2b51aa1bba98b8ae43b6deca5322bdc60d"
 EXPECTED_RESOURCE_COUNT = 238
 EXPECTED_HELD_MODELS = 74
 
 def stage(archive_path: Path, destination: Path, rules: Path) -> None:
-    data = archive_path.read_bytes()
+    encoded = ''.join(archive_path.read_text(encoding='ascii').split())
+    data = base64.b64decode(encoded, validate=True)
     actual = hashlib.sha256(data).hexdigest()
     if actual != EXPECTED_SHA256:
         raise SystemExit(f"Resource archive hash mismatch: {actual}")
     if destination.exists():
         shutil.rmtree(destination)
     destination.mkdir(parents=True)
-    with tarfile.open(fileobj=io.BytesIO(data), mode="r:xz") as archive:
+    with tarfile.open(fileobj=io.BytesIO(data), mode="r:gz") as archive:
         members = archive.getmembers()
         if len(members) != EXPECTED_RESOURCE_COUNT:
             raise SystemExit(f"Expected {EXPECTED_RESOURCE_COUNT} resources; got {len(members)}")
