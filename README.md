@@ -383,3 +383,70 @@ in both cases, plus normal jumps on solid ground.
 - Before declaring NEA support confirmed, test F5 walking, swimming and riding,
   alternating carried block/offhand, map, lantern and boat poses. This
   compatibility is source-level/collision checked, **not yet in-game verified**.
+
+## Alpha 4 Hotfix 21 — experimental protected F1/F5 models
+
+The client now selects namespaced item models `twohandedblocks:held/<item>`
+**only during rendering** of supported carried items in first or third person.
+It uses a disposable `ItemStack.copy()` with `DataComponents.ITEM_MODEL` set to
+the private model ID. The player's actual inventory item is never changed.
+Existing two-arm animations and hand priority remain intact.
+
+Protection scope:
+- Approved Block-Accurate v33 models: bells, beds, boats, minecarts, doors,
+  decorated pots and other bundled 3D models.
+- Other items fall back to the pre-existing renderer until protected models
+  have been explicitly generated and verified.
+- Texture identifiers remain vanilla where possible, allowing texture-only
+  resource packs to recolor the protected geometry.
+- This is NOT absolute protection from arbitrary mods or packs intentionally
+  modifying the `twohandedblocks` namespace. Beds still refer to vanilla
+  `minecraft:block/<bed>_head/foot` geometry and may require further
+  namespacing if another pack overrides those blocks.
+
+**Integrated builds now work in GitHub Actions.** The approved resource
+source is tracked in `bundled-resources/twohanded-visuals-v33.tar.gz.b64`
+(238 files; compressed GZIP/TAR encoded in text for GitHub source control).
+`tools/stage_protected_resources.py` verifies its SHA-256, safely stages the
+files as client resources, and checks that all 74 protected models match the
+Java whitelist. Gradle includes these resources automatically, and
+`tools/check_integrated_jar.py` verifies the final distributable JAR before
+GitHub Actions publishes the artifact. No manual assembly or external ZIP
+is required for this branch's regular `./gradlew build`.
+
+**In-game checks performed:** the player's inventory displayed a bell as a
+diamond block using a temporary `item_model` component, while the carried
+bell used our protected 3D model in F1. Better 3D Blocks was also tested
+as a conflicting resource pack; the reported carried positions remained
+unchanged. This is strong evidence for the protection but does not prove
+compatibility with all future texturepacks.
+
+**Known limitation:** the 17 bed models still reference vanilla
+`minecraft:block/*_bed_head` and `*_foot` geometries; third-party packs
+that modify those block models can still influence their held appearance.
+Objects that are not in the 74-item whitelist also retain their vanilla
+models (with the mod's arm and general position transforms).
+
+Test with a separate, known conflicting resource pack and compare F1/F5:
+- bell, decorated pot, bed, minecart and boat;
+- main and offhand;
+- original textures versus other compatible texture replacements;
+- inventory, world placement and one-handed objects unchanged.
+Do not merge this experiment into main until confirmed.
+
+
+### Build and testing notes (Hotfix 21)
+
+- GitHub Actions publishes the complete Fabric JAR from the experimental
+  `feature/protected-held-models` branch. The JAR contains both the
+  always-enabled Block-Accurate v33 built-in pack and 74 namespaced
+  `twohandedblocks:held/*` definitions.
+- The built-in pack is **not absolute pack priority**; models are protected
+  because the renderer selects namespaced versions of approved objects.
+- Use `tools/check_integrated_jar.py build/libs/twohandedblocks-0.2.0-alpha4-hotfix21.jar`
+  to verify a local build.
+- Keep the original Hotfix 20 JAR as a fallback until a full regression pass
+  confirms walking, riding, offhand precedence, NEA, swimming, totems and
+  climbing with the final Hotfix 21 distributable.
+- The bell texture/model attribution remains under CC BY-NC 4.0; the
+  Block-Accurate material retains its included MIT license.
