@@ -111,6 +111,11 @@ if (bundledResourceArchive.isFile()) {
     tasks.named("processClientResources").configure {
         dependsOn(stage)
     }
+    // With splitEnvironmentSourceSets, sourcesJar also scans client resource
+    // directories. Gradle 9 requires declaring this producer dependency.
+    tasks.named("sourcesJar").configure {
+        dependsOn(stage)
+    }
 } else if (externalPackZip != null && !externalPackZip.isBlank()) {
     // Backwards-compatible option for a local, manually supplied pack ZIP.
     // Does not create protected namespace assets; for this preview use the
