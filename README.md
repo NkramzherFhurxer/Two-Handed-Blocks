@@ -450,3 +450,19 @@ Do not merge this experiment into main until confirmed.
   climbing with the final Hotfix 21 distributable.
 - The bell texture/model attribution remains under CC BY-NC 4.0; the
   Block-Accurate material retains its included MIT license.
+
+## Alpha 4 Hotfix 22 — flowers remain one-handed
+
+- Hold all four vanilla tulips in one hand: `red_tulip`, `orange_tulip`,
+  `white_tulip`, `pink_tulip`. The `_tulip` suffix also covers any future
+  vanilla tulip colors without affecting non-Minecraft namespaces.
+- Move `peony` and `rose_bush` from the forced two-hand list to the
+  single-hand list. Their previous explicit two-hand override otherwise
+  took precedence over one-hand exceptions.
+- The other large flowers (sunflower, lilac), two-handed block rules, and
+  all models and hand animation adjustments are unchanged.
+- Protected-model JAR bundling and the included Block-Accurate v33 are unchanged.
+
+Verify each flower in first and third person (including the offhand) and that
+holding a flower no longer disables climbing or the totem. Confirm a stone
+block in the opposite hand still takes normal two-hand priority.
