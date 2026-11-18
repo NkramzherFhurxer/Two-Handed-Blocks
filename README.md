@@ -466,3 +466,31 @@ Do not merge this experiment into main until confirmed.
 Verify each flower in first and third person (including the offhand) and that
 holding a flower no longer disables climbing or the totem. Confirm a stone
 block in the opposite hand still takes normal two-hand priority.
+
+## Alpha 4 Hotfix 23 (experimental) — Smooth Player Animations CEM compatibility
+
+- Optional compatibility with Smooth Player Animations 2.1.0 (Fabric MC 26.3);
+  no dependency on its JAR when our mod starts without SPA.
+- In SPA **CEM engine mode**, restore the approved two-arm holding rotations
+  after SPA finishes applying its model pose. Also update SPA's saved CEM arm
+  rotations so armor follows the same pose. Model item transforms are unchanged.
+- In ordinary single-hand gameplay, SPA's gestures and swapping-hands animation
+  remain untouched. Two-Handed Blocks' **F1 renderer is unchanged**.
+- SPA's separate **bending-rig mode** renders from skinning matrices and is
+  not yet covered by this selective compatibility. If it remains problematic,
+  do not assume this hotfix has fixed that mode.
+
+### In-game regression test (SPA 2.1.0 installed, CEM enabled)
+
+1. Hold a redstone block, chest, bell, and decorated pot in F5, stationary and
+   walking: both arms should visually embrace each item without moving the item.
+2. Check a two-handed block from either main or offhand, and a one-hand item
+   in the other hand; priority must stay intact.
+3. Swap a shield between hands with F and verify SPA's Swapping Hands gesture
+   remains active with no two-handed block equipped.
+4. Recheck all four objects in F1: positions should be identical to Hotfix 22.
+5. Test SPA uninstalled and with its CEM engine off. The latter is not yet
+   integrated into the jointed animation rig.
+
+If SPA changes its internals in a future update, this compatibility safely logs
+a warning rather than changing the item placement.
