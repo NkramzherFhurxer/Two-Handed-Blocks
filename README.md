@@ -383,3 +383,114 @@ in both cases, plus normal jumps on solid ground.
 - Before declaring NEA support confirmed, test F5 walking, swimming and riding,
   alternating carried block/offhand, map, lantern and boat poses. This
   compatibility is source-level/collision checked, **not yet in-game verified**.
+
+## Alpha 4 Hotfix 21 — experimental protected F1/F5 models
+
+The client now selects namespaced item models `twohandedblocks:held/<item>`
+**only during rendering** of supported carried items in first or third person.
+It uses a disposable `ItemStack.copy()` with `DataComponents.ITEM_MODEL` set to
+the private model ID. The player's actual inventory item is never changed.
+Existing two-arm animations and hand priority remain intact.
+
+Protection scope:
+- Approved Block-Accurate v33 models: bells, beds, boats, minecarts, doors,
+  decorated pots and other bundled 3D models.
+- Other items fall back to the pre-existing renderer until protected models
+  have been explicitly generated and verified.
+- Texture identifiers remain vanilla where possible, allowing texture-only
+  resource packs to recolor the protected geometry.
+- This is NOT absolute protection from arbitrary mods or packs intentionally
+  modifying the `twohandedblocks` namespace. Beds still refer to vanilla
+  `minecraft:block/<bed>_head/foot` geometry and may require further
+  namespacing if another pack overrides those blocks.
+
+**Integrated builds now work in GitHub Actions.** The approved resource
+source is tracked in `bundled-resources/twohanded-visuals-v33.tar.gz.b64`
+(238 files; compressed GZIP/TAR encoded in text for GitHub source control).
+`tools/stage_protected_resources.py` verifies its SHA-256, safely stages the
+files as client resources, and checks that all 74 protected models match the
+Java whitelist. Gradle includes these resources automatically, and
+`tools/check_integrated_jar.py` verifies the final distributable JAR before
+GitHub Actions publishes the artifact. No manual assembly or external ZIP
+is required for this branch's regular `./gradlew build`.
+
+**In-game checks performed:** the player's inventory displayed a bell as a
+diamond block using a temporary `item_model` component, while the carried
+bell used our protected 3D model in F1. Better 3D Blocks was also tested
+as a conflicting resource pack; the reported carried positions remained
+unchanged. This is strong evidence for the protection but does not prove
+compatibility with all future texturepacks.
+
+**Known limitation:** the 17 bed models still reference vanilla
+`minecraft:block/*_bed_head` and `*_foot` geometries; third-party packs
+that modify those block models can still influence their held appearance.
+Objects that are not in the 74-item whitelist also retain their vanilla
+models (with the mod's arm and general position transforms).
+
+Test with a separate, known conflicting resource pack and compare F1/F5:
+- bell, decorated pot, bed, minecart and boat;
+- main and offhand;
+- original textures versus other compatible texture replacements;
+- inventory, world placement and one-handed objects unchanged.
+Do not merge this experiment into main until confirmed.
+
+
+### Build and testing notes (Hotfix 21)
+
+- GitHub Actions publishes the complete Fabric JAR from the experimental
+  `feature/protected-held-models` branch. The JAR contains both the
+  always-enabled Block-Accurate v33 built-in pack and 74 namespaced
+  `twohandedblocks:held/*` definitions.
+- The built-in pack is **not absolute pack priority**; models are protected
+  because the renderer selects namespaced versions of approved objects.
+- Use `tools/check_integrated_jar.py build/libs/twohandedblocks-0.2.0-alpha4-hotfix21.jar`
+  to verify a local build.
+- Keep the original Hotfix 20 JAR as a fallback until a full regression pass
+  confirms walking, riding, offhand precedence, NEA, swimming, totems and
+  climbing with the final Hotfix 21 distributable.
+- The bell texture/model attribution remains under CC BY-NC 4.0; the
+  Block-Accurate material retains its included MIT license.
+
+## Alpha 4 Hotfix 22 — flowers remain one-handed
+
+- Hold all four vanilla tulips in one hand: `red_tulip`, `orange_tulip`,
+  `white_tulip`, `pink_tulip`. The `_tulip` suffix also covers any future
+  vanilla tulip colors without affecting non-Minecraft namespaces.
+- Move `peony` and `rose_bush` from the forced two-hand list to the
+  single-hand list. Their previous explicit two-hand override otherwise
+  took precedence over one-hand exceptions.
+- The other large flowers (sunflower, lilac), two-handed block rules, and
+  all models and hand animation adjustments are unchanged.
+- Protected-model JAR bundling and the included Block-Accurate v33 are unchanged.
+
+Verify each flower in first and third person (including the offhand) and that
+holding a flower no longer disables climbing or the totem. Confirm a stone
+block in the opposite hand still takes normal two-hand priority.
+
+## Alpha 4 Hotfix 23 (experimental) — Smooth Player Animations CEM compatibility
+
+- Optional compatibility with Smooth Player Animations 2.1.0 (Fabric MC 26.3);
+  no dependency on its JAR when our mod starts without SPA.
+- In SPA **CEM engine mode**, restore the approved two-arm holding rotations
+  after SPA finishes applying its model pose. Also update SPA's saved CEM arm
+  rotations so armor follows the same pose. Model item transforms are unchanged.
+- In ordinary single-hand gameplay, SPA's gestures and swapping-hands animation
+  remain untouched. Two-Handed Blocks' **F1 renderer is unchanged**.
+- SPA's separate **bending-rig mode** renders from skinning matrices and is
+  not yet covered by this selective compatibility. If it remains problematic,
+  do not assume this hotfix has fixed that mode.
+
+### In-game regression test (SPA 2.1.0 installed, CEM enabled)
+
+1. Hold a redstone block, chest, bell, and decorated pot in F5, stationary and
+   walking: both arms should visually embrace each item without moving the item.
+2. Check a two-handed block from either main or offhand, and a one-hand item
+   in the other hand; priority must stay intact.
+3. Swap a shield between hands with F and verify SPA's Swapping Hands gesture
+   remains active with no two-handed block equipped.
+4. Recheck all four objects in F1: positions should be identical to Hotfix 22.
+5. Test SPA uninstalled and with its CEM engine off. The latter is not yet
+   integrated into the jointed animation rig.
+
+If SPA changes its internals in a future update, this compatibility safely logs
+a warning rather than changing the item placement.

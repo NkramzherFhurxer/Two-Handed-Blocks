@@ -9,7 +9,8 @@
     "CarriedItemModelContextMixin",
     "FirstPersonBlocksMixin",
     "KeyboardInputMountMixin",
-    "BoatControlMixin"
+    "BoatControlMixin",
+    "SmoothPlayerAnimationsRigMixin"
   ],
   "injectors": {
     "defaultRequire": 1
