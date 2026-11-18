@@ -18,8 +18,7 @@ public final class BlockRules {
     private static final Set<String> TWO_HANDS = Set.of(
             "cake", "cactus", "nether_brick_fence", "tinted_glass",
             "mossy_cobblestone_wall", "cobblestone_wall", "bamboo_block", "stripped_bamboo_block",
-            "big_dripleaf", "small_dripleaf", "tall_seagrass",
-            "rose_bush", "peony"
+            "big_dripleaf", "small_dripleaf", "tall_seagrass"
     );
 
     // Individual small blocks that are carried naturally in one hand.
@@ -39,6 +38,8 @@ public final class BlockRules {
             "dead_bush", "bush", "firefly_bush", "leaf_litter", "wildflowers",
             "pink_petals", "dry_grass", "tall_dry_grass", "dandelion", "golden_dandelion", "poppy",
             "blue_orchid", "allium", "azure_bluet", "oxeye_daisy", "cornflower",
+            "red_tulip", "orange_tulip", "white_tulip", "pink_tulip",
+            "peony", "rose_bush",
             "lily_of_the_valley", "wither_rose", "torchflower", "open_eyeblossom",
             "closed_eyeblossom", "brown_mushroom", "red_mushroom", "crimson_fungus",
             "warped_fungus", "crimson_roots", "warped_roots", "nether_sprouts",
@@ -58,7 +59,8 @@ public final class BlockRules {
     private static boolean oneHand(String path) {
         if (ONE_HAND.contains(path)) return true;
         // All vanilla color/material variants of these small objects.
-        return path.endsWith("_torch")
+        return path.endsWith("_tulip") // Includes future vanilla tulip colors.
+                || path.endsWith("_torch")
                 || path.endsWith("_button")
                 || path.endsWith("_pressure_plate")
                 || path.endsWith("_carpet")
