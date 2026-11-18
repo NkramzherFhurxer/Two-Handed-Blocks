@@ -27,10 +27,11 @@ jobs:
         id: protected_resources
         run: |
           if [[ -f bundled-resources/twohanded-visuals-v33.tar.gz.b64 ]]; then
-            python3 tools/check_integrated_jar.py build/libs/twohandedblocks-0.2.0-alpha4-hotfix21.jar
+            VERSION="$(sed -n 's/^version=//p' gradle.properties)"
+            python3 tools/check_integrated_jar.py "build/libs/twohandedblocks-${VERSION}.jar"
             echo "complete=true" >> "$GITHUB_OUTPUT"
           else
-            echo "::warning::Experimental Hotfix 21 build is code-only; bundled v33 archive not committed, not distributing incomplete JAR."
+            echo "::warning::Experimental build is code-only; bundled v33 archive not committed, not distributing incomplete JAR."
             echo "complete=false" >> "$GITHUB_OUTPUT"
           fi
       - name: capture build artifacts
