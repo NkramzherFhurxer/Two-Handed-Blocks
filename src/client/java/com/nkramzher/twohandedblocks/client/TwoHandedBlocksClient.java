@@ -34,6 +34,8 @@ public final class TwoHandedBlocksClient implements ClientModInitializer {
             }
         });
 
+        OptionalSpaBridge.initialize();
+
         // Not Enough Animations uses independent third-person animation
         // transformers. Our PlayerModelMixin is intentionally priority 500:
         // for two-handed blocks it reapplies the final two-arm hold pose,
