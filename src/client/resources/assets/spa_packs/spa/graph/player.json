@@ -1,0 +1,19 @@
+{
+  "format": "spa_graph/1",
+  "actions": [
+    {
+      "id": "twohandedblocks_hold",
+      "slot": "upper",
+      "priority": 55,
+      "backends": [
+        "bent"
+      ],
+      "when": "x.twohandedblocks_carry",
+      "loop": true,
+      "clip": "hold_lantern_both",
+      "mask": "arms",
+      "fade_in": 0.18,
+      "fade_out": 0.18
+    }
+  ]
+}
