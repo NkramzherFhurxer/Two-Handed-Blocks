@@ -6,5 +6,6 @@ import net.fabricmc.api.ClientModInitializer;
 public final class TwoHandedBlocksClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
+        OptionalSpaBridge.initialize();
     }
 }
