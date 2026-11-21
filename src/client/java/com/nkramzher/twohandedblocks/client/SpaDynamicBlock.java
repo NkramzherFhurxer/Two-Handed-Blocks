@@ -27,16 +27,35 @@ public final class SpaDynamicBlock {
     private static Method anchor;
     private static Method bent;
     private static boolean failed;
+    private static long nextReportAt;
+    private static String lastReport = "";
+
+    /** Rate-limited diagnostic messages in logs/latest.log (no render changes). */
+    private static void report(String status, String details) {
+        long now = System.nanoTime();
+        if (!status.equals(lastReport) || now >= nextReportAt) {
+            nextReportAt = now + 5_000_000_000L;
+            lastReport = status;
+            TwoHandedBlocks.LOGGER.info("[SPA dynamic diagnostic] {}: {}", status, details);
+        }
+    }
 
     private SpaDynamicBlock() {}
 
     /** Called only when the existing two-handed renderer draws the selected block. */
     public static void follow(AvatarRenderState state, PoseStack poses) {
-        if (failed || !FabricLoader.getInstance().isModLoaded("spa_packs")) return;
+        if (failed) return;
+        if (!FabricLoader.getInstance().isModLoaded("spa_packs")) {
+            report("SPA_NOT_PRESENT", "The original static position is expected");
+            return;
+        }
         Minecraft minecraft = Minecraft.getInstance();
         if (minecraft.level == null) return;
         Entity entity = minecraft.level.getEntity(state.id);
-        if (!(entity instanceof AbstractClientPlayer player)) return;
+        if (!(entity instanceof AbstractClientPlayer player)) {
+            report("PLAYER_NOT_RESOLVED", "AvatarRenderState.id=" + state.id);
+            return;
+        }
 
         try {
             if (!checked) {
@@ -46,20 +65,36 @@ public final class SpaDynamicBlock {
                 bent = api.getMethod("onBentRig", AbstractClientPlayer.class);
                 checked = true;
             }
-            if (!Boolean.TRUE.equals(bent.invoke(null, player))) return;
+            if (!Boolean.TRUE.equals(bent.invoke(null, player))) {
+                report("NOT_BENT", "SPA does not report the articulated model for this player");
+                return;
+            }
 
             double[] left = new double[3];
             double[] right = new double[3];
             double[] root = new double[3];
-            float[] rotation = new float[4];
-            if (!readAnchor(player, "left_hand", left, rotation)
-                    || !readAnchor(player, "right_hand", right, rotation)
-                    || !readAnchor(player, "root", root, rotation)) return;
+            // SPA 2.1.0 fills a 3x3 orientation matrix (9 floats), not a quaternion.
+            float[] rotation = new float[9];
+            if (!readAnchor(player, "left_hand", left, rotation)) {
+                report("MISSING_LEFT_HAND", "No fresh left-hand anchor; static fallback");
+                return;
+            }
+            if (!readAnchor(player, "right_hand", right, rotation)) {
+                report("MISSING_RIGHT_HAND", "No fresh right-hand anchor; static fallback");
+                return;
+            }
+            if (!readAnchor(player, "root", root, rotation)) {
+                report("MISSING_ROOT", "No fresh root anchor; static fallback");
+                return;
+            }
 
             double dx = 0.5 * (left[0] + right[0]) - root[0];
             double dy = 0.5 * (left[1] + right[1]) - root[1];
             double dz = 0.5 * (left[2] + right[2]) - root[2];
-            if (!Double.isFinite(dx) || !Double.isFinite(dy) || !Double.isFinite(dz)) return;
+            if (!Double.isFinite(dx) || !Double.isFinite(dy) || !Double.isFinite(dz)) {
+                report("INVALID_ANCHOR_COORDINATES", "At least one coordinate was non-finite");
+                return;
+            }
 
             // Remove yaw to avoid the block moving sideways when turning in place.
             double yaw = Math.toRadians(player.yBodyRot);
@@ -102,6 +137,11 @@ public final class SpaDynamicBlock {
             if (Float.isFinite(local.x) && Float.isFinite(local.y) && Float.isFinite(local.z)
                     && local.lengthSquared() < 1.5f) {
                 poses.translate(local.x, local.y, local.z);
+                report("ANCHORS_APPLIED", String.format(java.util.Locale.ROOT,
+                        "player=%d, delta=(%.4f, %.4f, %.4f), rendered=(%.4f, %.4f, %.4f)",
+                        state.id, tx, ty, tz, local.x, local.y, local.z));
+            } else {
+                report("RENDER_TRANSFORM_REJECTED", "Converted offset was invalid or excessive");
             }
         } catch (ReflectiveOperationException | LinkageError | RuntimeException exception) {
             failed = true;
