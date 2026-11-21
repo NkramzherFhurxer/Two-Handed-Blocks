@@ -29,7 +29,7 @@ public final class BlockRules {
             "creeper_head", "piglin_head", "player_head",
             "light", "barrier", "structure_void", "dried_ghast",
             "torch", "soul_torch", "redstone_torch", "lantern", "soul_lantern",
-            "lever", "tripwire_hook", "lightning_rod", "ladder", "chain", "iron_chain", "flower_pot", "iron_bars", "glass_pane", "red_shrub", "shelf_mushroom",
+            "lever", "tripwire_hook", "ladder", "chain", "iron_chain", "flower_pot", "iron_bars", "glass_pane", "red_shrub", "shelf_mushroom",
             "repeater", "comparator", "daylight_detector", "redstone_wire",
             "redstone", "lily_pad", "snow", "sea_pickle", "cobweb",
             // Single-hand visuals: their 3D resource-pack models do not require two-hand carrying.
@@ -60,6 +60,7 @@ public final class BlockRules {
         if (ONE_HAND.contains(path)) return true;
         // All vanilla color/material variants of these small objects.
         return path.endsWith("_tulip") // Includes future vanilla tulip colors.
+                || path.endsWith("_lightning_rod") // All oxidation and wax variants, including the base rod.
                 || path.endsWith("_torch")
                 || path.endsWith("_button")
                 || path.endsWith("_pressure_plate")
