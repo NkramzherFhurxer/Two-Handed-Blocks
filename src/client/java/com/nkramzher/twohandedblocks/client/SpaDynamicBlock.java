@@ -19,8 +19,11 @@ import org.joml.Vector3f;
  * fixed placement is used unchanged. Never changes item transforms in F1.
  */
 public final class SpaDynamicBlock {
-    private static final float FOLLOW = 0.40f;
-    private static final double MAX_MOTION = 0.65;
+    // Safety trial: keep the proven, fixed two-hand hold as the center.
+    // Previous cap (0.65) let the item travel far outside the gripping hands.
+    private static final float FOLLOW = 0.25f;
+    private static final double MAX_MOTION = 0.16;
+    private static final float MAX_LOCAL_TRANSLATION = 0.115f;
     private static final long RESET_AFTER_NS = 1_500_000_000L;
     private static final Map<Integer, Sample> SAMPLES = new HashMap<>();
     private static boolean checked;
@@ -134,14 +137,21 @@ public final class SpaDynamicBlock {
             Matrix4f inverse = new Matrix4f(poses.last().pose()).invert();
             Vector3f local = inverse.transformDirection(
                     new Vector3f(worldX, (float) sample.sy, worldZ));
-            if (Float.isFinite(local.x) && Float.isFinite(local.y) && Float.isFinite(local.z)
-                    && local.lengthSquared() < 1.5f) {
+            if (Float.isFinite(local.x) && Float.isFinite(local.y) && Float.isFinite(local.z)) {
+                // The anchor offsets are in world space while the held block is drawn
+                // in the player's local render space. Never allow conversion or
+                // camera orientation to dislodge it from the approved hand grip.
+                float convertedLength = local.length();
+                if (convertedLength > MAX_LOCAL_TRANSLATION) {
+                    local.mul(MAX_LOCAL_TRANSLATION / convertedLength);
+                }
                 poses.translate(local.x, local.y, local.z);
                 report("ANCHORS_APPLIED", String.format(java.util.Locale.ROOT,
-                        "player=%d, delta=(%.4f, %.4f, %.4f), rendered=(%.4f, %.4f, %.4f)",
-                        state.id, tx, ty, tz, local.x, local.y, local.z));
+                        "player=%d, handDelta=(%.4f, %.4f, %.4f), local=(%.4f, %.4f, %.4f), localClamped=%s",
+                        state.id, tx, ty, tz, local.x, local.y, local.z,
+                        convertedLength > MAX_LOCAL_TRANSLATION));
             } else {
-                report("RENDER_TRANSFORM_REJECTED", "Converted offset was invalid or excessive");
+                report("RENDER_TRANSFORM_REJECTED", "Converted offset was non-finite");
             }
         } catch (ReflectiveOperationException | LinkageError | RuntimeException exception) {
             failed = true;
