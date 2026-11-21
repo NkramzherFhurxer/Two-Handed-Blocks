@@ -23,6 +23,12 @@ public final class SpaDynamicBlock {
     private static final float FOLLOW = 0.42f;
     private static final double MAX_MOTION = 0.23;
     private static final float DELTA_GAIN = 1.35f;
+    // Sprint can keep both hands nearly stationary relative to the rig.
+    // Add a small, stride-synchronized carry bounce only on the ground.
+    // Amplitudes are in model-local blocks and fit inside the grip cap.
+    private static final float SPRINT_BOB_Y = 0.040f;
+    private static final float SPRINT_BOB_Z = 0.018f;
+    private static final float SPRINT_BOB_X = 0.008f;
     private static final long RESET_AFTER_NS = 1_500_000_000L;
     private static final Map<Integer, Sample> SAMPLES = new HashMap<>();
     private static boolean checked;
@@ -140,6 +146,23 @@ public final class SpaDynamicBlock {
                     (float) sample.sx * DELTA_GAIN,
                     -(float) sample.sy * DELTA_GAIN,
                     (float) sample.sz * DELTA_GAIN);
+
+            // The anchor midpoint often barely changes in sprint: opposing
+            // hand swings cancel out. A restrained stride bob restores some
+            // motion without interfering with walking, swimming or sitting.
+            // Only run on the bend rig; all code above already verifies this.
+            if (player.isSprinting() && player.onGround()) {
+                float speed = Math.min(1.0f,
+                        Math.max(0.0f, state.walkAnimationSpeed * 1.5f));
+                if (speed > 0.03f) {
+                    float phase = state.walkAnimationPos * 0.6662f;
+                    float bob = (float) Math.cos(phase * 2.0f);
+                    float sway = (float) Math.sin(phase);
+                    local.add(SPRINT_BOB_X * sway * speed,
+                            SPRINT_BOB_Y * bob * speed,
+                            SPRINT_BOB_Z * sway * speed);
+                }
+            }
             if (Float.isFinite(local.x) && Float.isFinite(local.y) && Float.isFinite(local.z)) {
                 float beforeClamp = local.length();
                 if (beforeClamp > MAX_MOTION) {
