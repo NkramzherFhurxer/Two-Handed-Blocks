@@ -73,7 +73,8 @@ public final class SpaDynamicBlock {
             double[] left = new double[3];
             double[] right = new double[3];
             double[] root = new double[3];
-            float[] rotation = new float[4];
+            // SPA 2.1.0 fills a 3x3 orientation matrix (9 floats), not a quaternion.
+            float[] rotation = new float[9];
             if (!readAnchor(player, "left_hand", left, rotation)) {
                 report("MISSING_LEFT_HAND", "No fresh left-hand anchor; static fallback");
                 return;
