@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.nkramzher.twohandedblocks.BlockRules;
 import com.nkramzher.twohandedblocks.client.CarriedModelProfile;
+import com.nkramzher.twohandedblocks.client.SpaDynamicBlock;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.layers.PlayerItemInHandLayer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
@@ -35,6 +36,9 @@ public abstract class PlayerItemInHandLayerMixin {
 
         if (arm == carryingArm) {
             poses.pushPose();
+            // Move the carried block with SPA's animated hand midpoint when
+            // the articulated rig is active. Fixed placement remains fallback.
+            SpaDynamicBlock.follow(state, poses);
             // Model coordinates are +Y down. Center the carried item between
             // both arms. The model's baked third-person pivot is different for
             // full blocks / fence gates than for fence / wall models.
