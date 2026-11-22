@@ -4,13 +4,17 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.nkramzher.twohandedblocks.BlockRules;
 import com.nkramzher.twohandedblocks.client.CarriedModelProfile;
+import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.client.renderer.entity.layers.PlayerItemInHandLayer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
+import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,7 +22,47 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /** Draw the block at the centre of the torso and hide the secondary item. */
 @Mixin(PlayerItemInHandLayer.class)
-public abstract class PlayerItemInHandLayerMixin {
+public abstract class PlayerItemInHandLayerMixin extends ItemInHandLayer<AvatarRenderState, PlayerModel> {
+    // Mean position of the palms in our proven two-handed idle arm pose.
+    // Shoulder pivots at +/-5,2,0 pixels, palm at y=10px, arm rotations
+    // x=-1.28, y=+/-0.12, z=+/-0.18 (see PlayerModelMixin).
+    private static final float REST_HAND_Y = 0.2884692f;
+    private static final float REST_HAND_Z = -0.594454f;
+    private static final float PALM_Y = 10.0f / 16.0f;
+
+    protected PlayerItemInHandLayerMixin(RenderLayerParent<AvatarRenderState, PlayerModel> renderer) {
+        super(renderer);
+    }
+
+    /** Translate through the actual animated arm to find its palm in model space. */
+    private static Vector3f palm(PlayerModel model, AvatarRenderState state, HumanoidArm arm) {
+        PoseStack handPose = new PoseStack();
+        model.translateToHand(state, arm, handPose);
+        return handPose.last().pose().transformPosition(0.0f, PALM_Y, 0.0f, new Vector3f());
+    }
+
+    /**
+     * Sitting emotes bend both legs forward, unlike walking/running where
+     * their pitch has opposite signs. Exclude riding to preserve mounts.
+     * Emote-based sitting has no vanilla render-state boolean of its own.
+     */
+    private static boolean looksSeated(AvatarRenderState state, PlayerModel model) {
+        return !state.isPassenger && model.leftLeg.xRot < -0.9f && model.rightLeg.xRot < -0.9f;
+    }
+
+    /**
+     * Apply only the difference from the already-calibrated standing pose.
+     * This preserves the size, angles and offsets for every block while
+     * making a sitting block follow the animated midpoint between the palms.
+     */
+    private Vector3f seatedHandCorrection(AvatarRenderState state) {
+        PlayerModel model = this.getParentModel();
+        if (!looksSeated(state, model)) return new Vector3f();
+        Vector3f right = palm(model, state, HumanoidArm.RIGHT);
+        Vector3f left = palm(model, state, HumanoidArm.LEFT);
+        return right.add(left).mul(0.5f).sub(0.0f, REST_HAND_Y, REST_HAND_Z);
+    }
+
     @Inject(method = "submitArmWithItem", at = @At("HEAD"), cancellable = true)
     private void twohandedblocks$submitBlock(AvatarRenderState state, ItemStackRenderState item,
             ItemStack stack, HumanoidArm arm, PoseStack poses, SubmitNodeCollector nodes,
@@ -35,8 +79,9 @@ public abstract class PlayerItemInHandLayerMixin {
             // Preserve the proven fence / wall alignment rather than applying
             // one universal X offset to every model.
             CarriedModelProfile.Shape profile = CarriedModelProfile.shape(stack);
-            poses.translate(CarriedModelProfile.thirdPersonHorizontalOffset(stack),
-                    0.40f, -0.53f);
+            Vector3f seatedDelta = seatedHandCorrection(state);
+            poses.translate(CarriedModelProfile.thirdPersonHorizontalOffset(stack) + seatedDelta.x(),
+                    0.40f + seatedDelta.y(), -0.53f + seatedDelta.z());
             if (profile == CarriedModelProfile.Shape.BELL) {
                 // The bell has a special item model: keep the last tested pose
                 // until we deliberately revisit its geometry.
