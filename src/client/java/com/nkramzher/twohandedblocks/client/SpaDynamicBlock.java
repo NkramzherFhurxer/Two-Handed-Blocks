@@ -29,6 +29,10 @@ public final class SpaDynamicBlock {
     private static final float SPRINT_BOB_Y = 0.040f;
     private static final float SPRINT_BOB_Z = 0.018f;
     private static final float SPRINT_BOB_X = 0.008f;
+    // A gentler step motion while walking normally (W without sprint).
+    private static final float WALK_BOB_Y = 0.023f;
+    private static final float WALK_BOB_Z = 0.010f;
+    private static final float WALK_BOB_X = 0.004f;
     private static final long RESET_AFTER_NS = 1_500_000_000L;
     private static final Map<Integer, Sample> SAMPLES = new HashMap<>();
     private static boolean checked;
@@ -147,10 +151,10 @@ public final class SpaDynamicBlock {
                     -(float) sample.sy * DELTA_GAIN,
                     (float) sample.sz * DELTA_GAIN);
 
-            // The anchor midpoint often barely changes in sprint: opposing
-            // hand swings cancel out. A restrained stride bob restores some
-            // motion without interfering with walking, swimming or sitting.
-            // Only run on the bend rig; all code above already verifies this.
+            // Both walking and sprinting can cancel the hand-midpoint sway.
+            // Restore a subtle, stride-timed carry motion while walking normally
+            // and retain the already user-tested sprint values unchanged.
+            // Only applies on the SPA bent rig, and never to the seated idle.
             if (player.isSprinting() && player.onGround()) {
                 float speed = Math.min(1.0f,
                         Math.max(0.0f, state.walkAnimationSpeed * 1.5f));
@@ -161,6 +165,18 @@ public final class SpaDynamicBlock {
                     local.add(SPRINT_BOB_X * sway * speed,
                             SPRINT_BOB_Y * bob * speed,
                             SPRINT_BOB_Z * sway * speed);
+                }
+            } else if (player.onGround() && !state.isCrouching
+                    && !state.isPassenger && !state.isVisuallySwimming) {
+                float speed = Math.min(1.0f,
+                        Math.max(0.0f, state.walkAnimationSpeed * 2.25f));
+                if (speed > 0.12f) {
+                    float phase = state.walkAnimationPos * 0.6662f;
+                    float bob = (float) Math.cos(phase * 2.0f);
+                    float sway = (float) Math.sin(phase);
+                    local.add(WALK_BOB_X * sway * speed,
+                            WALK_BOB_Y * bob * speed,
+                            WALK_BOB_Z * sway * speed);
                 }
             }
             if (Float.isFinite(local.x) && Float.isFinite(local.y) && Float.isFinite(local.z)) {
