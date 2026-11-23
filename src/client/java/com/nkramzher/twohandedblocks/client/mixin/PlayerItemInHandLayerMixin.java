@@ -4,13 +4,19 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import com.nkramzher.twohandedblocks.BlockRules;
 import com.nkramzher.twohandedblocks.client.CarriedModelProfile;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.player.PlayerModel;
 import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.entity.RenderLayerParent;
+import net.minecraft.client.renderer.entity.layers.ItemInHandLayer;
 import net.minecraft.client.renderer.entity.layers.PlayerItemInHandLayer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -18,7 +24,76 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /** Draw the block at the centre of the torso and hide the secondary item. */
 @Mixin(PlayerItemInHandLayer.class)
-public abstract class PlayerItemInHandLayerMixin {
+public abstract class PlayerItemInHandLayerMixin extends ItemInHandLayer<AvatarRenderState, PlayerModel> {
+    private static final float PALM_FROM_SHOULDER = 10.0f / 16.0f;
+    // This is a guardrail, not a sitting offset. Large incompatible animation
+    // transforms fall back to the last stable carry pose instead of hiding the block.
+    private static final float MAX_HAND_FOLLOW = 0.35f;
+
+    protected PlayerItemInHandLayerMixin(RenderLayerParent<AvatarRenderState, PlayerModel> renderer) {
+        super(renderer);
+    }
+
+    private static Vector3f palmPosition(PlayerModel model, AvatarRenderState state, HumanoidArm arm) {
+        PoseStack p = new PoseStack();
+        // Use the same hand anchor method as Minecraft's native held-item layer.
+        // This allows compatible animation mods to contribute their own pivots.
+        model.translateToHand(state, arm, p);
+        return p.last().pose().transformPosition(0.0f, PALM_FROM_SHOULDER, 0.0f, new Vector3f());
+    }
+
+    private static Vector3f handMidpoint(PlayerModel model, AvatarRenderState state) {
+        return palmPosition(model, state, HumanoidArm.RIGHT)
+                .add(palmPosition(model, state, HumanoidArm.LEFT))
+                .mul(0.5f);
+    }
+
+    private static void setCanonicalCarry(ModelPart arm, HumanoidArm side) {
+        arm.setPos(side == HumanoidArm.RIGHT ? -5.0f : 5.0f, 2.0f, 0.0f);
+        arm.setRotation(-1.28f, side == HumanoidArm.RIGHT ? -0.12f : 0.12f,
+                side == HumanoidArm.RIGHT ? -0.18f : 0.18f);
+    }
+
+    /**
+     * Compare the live palms to the Hotfix 7 carry pose in the SAME model,
+     * frame and CEM configuration. There is no sit/leg-angle heuristic.
+     * Transform the difference back to the model-root coordinate frame because
+     * root translation/rotation is applied separately to the block.
+     * The original animation state is always restored before item rendering.
+     */
+    private static Vector3f handFollowDelta(PlayerModel model, AvatarRenderState state) {
+        Vector3f live = handMidpoint(model, state);
+
+        ModelPart right = model.rightArm;
+        ModelPart left = model.leftArm;
+        float[] r = {right.x, right.y, right.z, right.xRot, right.yRot, right.zRot};
+        float[] l = {left.x, left.y, left.z, left.xRot, left.yRot, left.zRot};
+        Vector3f reference;
+        try {
+            setCanonicalCarry(right, HumanoidArm.RIGHT);
+            setCanonicalCarry(left, HumanoidArm.LEFT);
+            reference = handMidpoint(model, state);
+        } finally {
+            right.setPos(r[0], r[1], r[2]);
+            right.setRotation(r[3], r[4], r[5]);
+            left.setPos(l[0], l[1], l[2]);
+            left.setRotation(l[3], l[4], l[5]);
+        }
+
+        Vector3f delta = live.sub(reference);
+        // The reference above includes root transforms; remove them here.
+        PoseStack rootPose = new PoseStack();
+        model.root().translateAndRotate(rootPose);
+        new Matrix4f(rootPose.last().pose()).invert().transformDirection(delta);
+        if (!Float.isFinite(delta.x()) || !Float.isFinite(delta.y()) || !Float.isFinite(delta.z())) {
+            return new Vector3f();
+        }
+
+        float len = delta.length();
+        if (len > MAX_HAND_FOLLOW) delta.mul(MAX_HAND_FOLLOW / len);
+        return delta;
+    }
+
     @Inject(method = "submitArmWithItem", at = @At("HEAD"), cancellable = true)
     private void twohandedblocks$submitBlock(AvatarRenderState state, ItemStackRenderState item,
             ItemStack stack, HumanoidArm arm, PoseStack poses, SubmitNodeCollector nodes,
@@ -29,14 +104,19 @@ public abstract class PlayerItemInHandLayerMixin {
 
         if (arm == state.mainArm) {
             poses.pushPose();
+            PlayerModel animatedModel = this.getParentModel();
+            Vector3f handDelta = handFollowDelta(animatedModel, state);
+            // The player's animated root (lean/sit/turn) also moves its arms.
+            // HF7 omitted this transform for held blocks. Usually it is identity.
+            animatedModel.root().translateAndRotate(poses);
             // Model coordinates are +Y down. Center the carried item between
             // both arms. The model's baked third-person pivot is different for
             // full blocks / fence gates than for fence / wall models.
             // Preserve the proven fence / wall alignment rather than applying
             // one universal X offset to every model.
             CarriedModelProfile.Shape profile = CarriedModelProfile.shape(stack);
-            poses.translate(CarriedModelProfile.thirdPersonHorizontalOffset(stack),
-                    0.40f, -0.53f);
+            poses.translate(CarriedModelProfile.thirdPersonHorizontalOffset(stack) + handDelta.x(),
+                    0.40f + handDelta.y(), -0.53f + handDelta.z());
             if (profile == CarriedModelProfile.Shape.BELL) {
                 // The bell has a special item model: keep the last tested pose
                 // until we deliberately revisit its geometry.
